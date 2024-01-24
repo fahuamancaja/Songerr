@@ -1,0 +1,6 @@
+@Songerr_HostAddress = http://localhost:5236
+
+GET {{Songerr_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
