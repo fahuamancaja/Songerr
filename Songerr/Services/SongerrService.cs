@@ -1,17 +1,10 @@
 ﻿namespace Songerr.Services
 {
-    using FFMpegCore.Enums;
-    using FFMpegCore;
     using Google.Apis.Services;
     using Google.Apis.YouTube.v3;
-    using MediaToolkit;
-    using MediaToolkit.Model;
     using Newtonsoft.Json.Linq;
-    using System.Diagnostics;
     using System.IO;
     using System.Threading.Tasks;
-    using VideoLibrary;
-    using YoutubeDLSharp.Options;
     using YoutubeDLSharp;
 
     public class SongerrService : ISongerrService
@@ -68,7 +61,7 @@
                     artist = artist.Replace(' ', '_').Replace('.', '_').Replace('-', '_');
 
                     // Define the root directory path
-                    string rootDirectoryPath = @"C:\Media\Music";
+                    string rootDirectoryPath = @"E:\Music";
 
                     // Create a directory named after the channel title under the root directory
                     string directoryPath = Path.Combine(rootDirectoryPath, artist);
@@ -80,17 +73,35 @@
 
                     // The path of the downloaded audio file
                     string outputMp3Path = result.Data;
+                    string titleName = Path.GetFileName(outputMp3Path);
+
 
                     // Rename the output file
-                    string newFileName = $"{title}.mp3";
+                    string newFileName = Path.ChangeExtension(title, ".mp3");
+
+                    //if (outputMp3Path.Contains("opus"))
+                    //{
+                    //    newFileName = $"{titleName}.opus";
+                    //}
                     string newFilePath = Path.Combine(directoryPath, newFileName);
+
+                    // Check if outputMp3Path exists
+                    if (!File.Exists(outputMp3Path))
+                    {
+                        Console.WriteLine($"Output file {outputMp3Path} does not exist.");
+                    }
+
+                    // Check if newFilePath already exists
+                    if (!File.Exists(newFilePath))
+                    {
+                        Console.WriteLine($"New file {newFilePath} does not exist.");
+                    }
+
+
                     File.Move(outputMp3Path, newFilePath);
 
                     return newFilePath;
                 }
-
-
-
 
             }
             catch (Exception ex)
@@ -101,5 +112,4 @@
             }
         }
     }
-
 }
