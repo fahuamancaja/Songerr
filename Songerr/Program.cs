@@ -21,6 +21,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add services to the container.
+builder.Services.AddSingleton<ISpotifyService, SpotifyService>(provider =>
+    new SpotifyService(clientId, clientSecret));
 builder.Services.AddSingleton<IMusicSearchService, MusicSearchService>(provider =>
     new MusicSearchService(clientId,clientSecret));
 builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>

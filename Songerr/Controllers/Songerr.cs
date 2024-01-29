@@ -13,12 +13,14 @@ namespace Songerr.Controllers
         private readonly ISongerrService _songerrService;
         private readonly IMusicSearchService _musicSearchService;
         private readonly IPlaylistRetriever _playlistRetrieverService;
+        private readonly ISpotifyService _spotifyService;
 
-        public Songerr(ISongerrService songerrService, IMusicSearchService musicSearchService, IPlaylistRetriever playlistRetrieverService)
+        public Songerr(ISongerrService songerrService, IMusicSearchService musicSearchService, IPlaylistRetriever playlistRetrieverService, ISpotifyService spotifyService)
         {
             _songerrService = songerrService;
             _musicSearchService = musicSearchService;
             _playlistRetrieverService = playlistRetrieverService;
+            _spotifyService = spotifyService;
         }
 
         public class SongInput
@@ -60,5 +62,13 @@ namespace Songerr.Controllers
 
             return Ok(request);
         }
+
+        [HttpGet("GetSpotifyPlaylistTitles")]
+        public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
+        {
+            var request = await _spotifyService.GetSongTitlesAndArtistsAsync(playlistId);
+            return Ok(request);
+        }
+
     }
 }
