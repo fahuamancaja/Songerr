@@ -59,20 +59,20 @@ namespace Songerr.Services
 
 
 
-        private async Task<DeezerSong> SearchDeezerAsync(string songName)
-        {
-            var client = new RestClient("https://api.deezer.com/search?q=" + songName);
-            var request = new RestRequest();
-            request.AddHeader("app_id", _deezerApiKey);
-            var response = await client.GetAsync(request);
-            if (response.IsSuccessful)
-            {
-                var deezerSong = JsonConvert.DeserializeObject<DeezerSong>(response.Content);
-                return deezerSong;
-            }
+        //private async Task<DeezerSong> SearchDeezerAsync(string songName)
+        //{
+        //    var client = new RestClient("https://api.deezer.com/search?q=" + songName);
+        //    var request = new RestRequest();
+        //    request.AddHeader("app_id", _deezerApiKey);
+        //    var response = await client.GetAsync(request);
+        //    if (response.IsSuccessful)
+        //    {
+        //        var deezerSong = JsonConvert.DeserializeObject<DeezerSong>(response.Content);
+        //        return deezerSong;
+        //    }
 
-            return null;
-        }
+        //    return null;
+        //}
 
         private async Task<string> GetSpotifyAccessTokenAsync()
         {

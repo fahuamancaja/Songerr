@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Google.Apis.YouTube.v3;
+using Microsoft.AspNetCore.Mvc;
 using Songerr.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -11,11 +12,13 @@ namespace Songerr.Controllers
     {
         private readonly ISongerrService _songerrService;
         private readonly IMusicSearchService _musicSearchService;
+        private readonly IPlaylistRetriever _playlistRetrieverService;
 
-        public Songerr(ISongerrService songerrService, IMusicSearchService musicSearchService)
+        public Songerr(ISongerrService songerrService, IMusicSearchService musicSearchService, IPlaylistRetriever playlistRetrieverService)
         {
             _songerrService = songerrService;
             _musicSearchService = musicSearchService;
+            _playlistRetrieverService = playlistRetrieverService;
         }
 
         public class SongInput
@@ -48,6 +51,14 @@ namespace Songerr.Controllers
             }
 
             return Ok(songInfo);
+        }
+        [HttpGet("GetPlaylistTitles")]
+        public async Task<IActionResult> GetPlaylistTitles(string playlistId)
+        {
+
+            var request = _playlistRetrieverService.GetPlaylistTitlesAsync(playlistId);
+
+            return Ok(request);
         }
     }
 }

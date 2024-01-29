@@ -60,13 +60,6 @@
                     artist = new string(artist.Where(c => !Path.GetInvalidPathChars().Contains(c)).ToArray());
                     artist = artist.Replace(' ', '_').Replace('.', '_').Replace('-', '_');
 
-                    // Define the root directory path
-                    string rootDirectoryPath = @"E:\Music";
-
-                    // Create a directory named after the channel title under the root directory
-                    string directoryPath = Path.Combine(rootDirectoryPath, artist);
-                    Directory.CreateDirectory(directoryPath);
-
                     // Download the audio of the video
                     var youtubeDl = new YoutubeDL();
                     var result = await youtubeDl.RunAudioDownload("https://www.youtube.com/watch?v=" + firstVideoId);
@@ -75,14 +68,22 @@
                     string outputMp3Path = result.Data;
                     string titleName = Path.GetFileName(outputMp3Path);
 
+                    // Define the root directory path
+                    string rootDirectoryPath = @"E:\Music";
+
+                    string[] parts = title.Split('-');
+
+                    string newArtist = parts[0].Trim(); // Trim() is used to remove any leading or trailing whitespace
+                    string newTitle = parts[1].Trim();
+
+                    // Create a directory named after the channel title under the root directory
+                    string directoryPath = Path.Combine(rootDirectoryPath, newArtist);
+                    Directory.CreateDirectory(directoryPath);
 
                     // Rename the output file
-                    string newFileName = Path.ChangeExtension(title, ".mp3");
+                    string newFileName = Path.ChangeExtension(newTitle, ".mp3");
 
-                    //if (outputMp3Path.Contains("opus"))
-                    //{
-                    //    newFileName = $"{titleName}.opus";
-                    //}
+                    // New output path and filename
                     string newFilePath = Path.Combine(directoryPath, newFileName);
 
                     // Check if outputMp3Path exists

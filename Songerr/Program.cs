@@ -21,12 +21,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add services to the container.
-builder.Services.AddTransient<ISpotifySong, SpotifySong>();
-builder.Services.AddTransient<IDeezerSong, DeezerSong>();
 builder.Services.AddSingleton<IMusicSearchService, MusicSearchService>(provider =>
     new MusicSearchService(clientId,clientSecret));
 builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>
     new SongerrService(apiKey, appName));
+builder.Services.AddSingleton<IPlaylistRetriever, PlaylistRetriever>(provider =>
+    new PlaylistRetriever(apiKey));
 
 var app = builder.Build();
 
