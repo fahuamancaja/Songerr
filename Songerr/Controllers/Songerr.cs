@@ -56,7 +56,7 @@ namespace Songerr.Controllers
         public async Task<IActionResult> GetPlaylistTitles(string playlistId)
         {
 
-            var request = _playlistRetrieverService.GetPlaylistTitlesAsync(playlistId);
+            var request = await _playlistRetrieverService.GetPlaylistTitlesAsync(playlistId);
 
             return Ok(request);
         }

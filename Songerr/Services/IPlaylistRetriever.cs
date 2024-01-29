@@ -2,6 +2,6 @@
 {
     public interface IPlaylistRetriever
     {
-        Task<IEnumerable<string>> GetPlaylistTitlesAsync(string playlistId);
+        Task<List<string>> GetPlaylistTitlesAsync(string playlistId);
     }
 }

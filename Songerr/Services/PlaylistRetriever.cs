@@ -4,7 +4,10 @@ using Google.Apis.YouTube.v3.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using YoutubeExplode;
+
 
 namespace Songerr.Services
 {
@@ -18,30 +21,28 @@ namespace Songerr.Services
              ApiKey = apiKey });
         }
 
-        public async Task<IEnumerable<string>> GetPlaylistTitlesAsync(string playlistId)
+        public async Task<List<string>> GetPlaylistTitlesAsync(string playlistId)
         {
             var nextPageToken = "";
             var titles = new List<string>();
 
-            do
+            var youtube = new YoutubeClient();
+            var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
+
+            await foreach (var video in youtube.Playlists.GetVideosAsync(playlistUrl))
             {
-                var request = _youtubeService.PlaylistItems.List("snippet");
-                request.PlaylistId = playlistId;
-                request.MaxResults = 50;
-                request.PageToken = nextPageToken;
-
-                var response = await request.ExecuteAsync();
-
-                foreach (var item in response.Items)
-                {
-                    titles.Add($"{item.Snippet.Title}");
-                }
-
-                nextPageToken = response.NextPageToken;
+                var title = video.Title;
+                var author = video.Author;
+                var spTitles = "\"" + RemoveSpecialCharacters($"{author} - {title},") + "\"" + ",";
+                titles.Add(spTitles);
             }
-            while (!string.IsNullOrEmpty(nextPageToken));
 
             return titles;
         }
+        private static string RemoveSpecialCharacters(string str)
+        {
+            return Regex.Replace(str, "[^a-zA-Z0-9 ]", "");
+        }
+
     }
 }
