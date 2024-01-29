@@ -11,12 +11,13 @@
 
   <ItemGroup>
     <PackageReference Include="FFMpegCore" Version="5.1.0" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.66.0.3205" />
+    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.66.0.3309" />
     <PackageReference Include="MediaToolkit" Version="1.1.0.1" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.18.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="RestSharp" Version="110.2.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+    <PackageReference Include="SpotifyAPI.Web" Version="7.0.2" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
     <PackageReference Include="VideoLibrary" Version="3.2.3" />
     <PackageReference Include="YoutubeDLSharp" Version="1.1.0" />
     <PackageReference Include="YoutubeExplode" Version="6.3.12" />
