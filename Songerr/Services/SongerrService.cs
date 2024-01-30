@@ -86,6 +86,11 @@
                         directoryPath = Path.Combine(rootDirectoryPath, newArtist);
                         Directory.CreateDirectory(directoryPath);
                     }
+                    else
+                    {
+                        directoryPath = Path.Combine(rootDirectoryPath, artist);
+                        Directory.CreateDirectory(directoryPath);
+                    }
 
                     // Rename the output file
                     string newFileName = Path.ChangeExtension(titleName, ".mp3");

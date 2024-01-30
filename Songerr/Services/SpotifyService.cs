@@ -36,7 +36,6 @@ namespace Songerr.Services
                 {
                     var artists = string.Join(", ", track.Artists.Select(artist => artist.Name).ToArray());
 
-
                     songs.Add($"{artists} - {track.Name}");
                 }
             }
