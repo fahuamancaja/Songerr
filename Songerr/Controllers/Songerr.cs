@@ -43,13 +43,13 @@ namespace Songerr.Controllers
         }
 
         [HttpGet("GetSongInfo")]
-        public async Task<IActionResult> GetSongInfo(string songName)
+        public async Task<IActionResult> GetSongInfo()
         {
-            var songInfo = await _musicSearchService.GetSongInfoAsync(songName);
+            var songInfo = await _musicSearchService.GetSongInfoAsync();
 
             if (songInfo == null)
             {
-                return NotFound($"No song found with the name {songName}.");
+                return NotFound($"No song found with the name.");
             }
 
             return Ok(songInfo);

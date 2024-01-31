@@ -1,16 +1,16 @@
 ﻿using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using RestSharp;
 using Songerr.Models;
 using System.Net;
+using System.Runtime.CompilerServices;
 
 namespace Songerr.Services
 {
     public class MusicSearchService : IMusicSearchService
     {
-        private readonly string _spotifyApiKey = "<Your Spotify API Key>";
-        private readonly string _deezerApiKey = "<Your Deezer API Key>";
         private readonly string _clientId;
         private readonly string _clientSecret;
 
@@ -20,10 +20,10 @@ namespace Songerr.Services
             _clientSecret = clientSecret;
         }
 
-        public async Task<SpotifyResults> GetSongInfoAsync(string songName)
+        public async Task<string> GetSongInfoAsync()
         {
             // Try Spotify API first
-            var spotifyResult = await SearchSpotifyAsync(songName);
+            var spotifyResult = await SearchSpotifyAsync();
             //if (spotifyResult != null)
             //{
                 return spotifyResult;
@@ -34,8 +34,11 @@ namespace Songerr.Services
             //return deezerResult;
         }
 
-        private async Task<SpotifyResults> SearchSpotifyAsync(string songName)
+        private async Task<string> SearchSpotifyAsync()
         {
+            var fileDetails = GetFileDetails(@"E:\Test");
+
+
             var accessToken = await GetSpotifyAccessTokenAsync();
 
             if (accessToken == null)
@@ -43,15 +46,25 @@ namespace Songerr.Services
                 throw new Exception("Failed to retrieve access token.");
             }
 
-            var client = new RestClient("https://api.spotify.com/v1/search?q=" + songName + "&type=track");
-            var request = new RestRequest();
-            request.AddHeader("Authorization", $"Bearer {accessToken}");
-            var response = await client.GetAsync(request);
-            if (response.IsSuccessful)
+            foreach (KeyValuePair<string, string> kvp in fileDetails)
             {
-                var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
-                var songTrack = spotifySong.tracks.items.FirstOrDefault();
-                return spotifySong;
+                string fullPath = kvp.Key;
+                string fileNameWithoutPath = kvp.Value;
+
+                var client = new RestClient("https://api.spotify.com/v1/search?q=" + fileNameWithoutPath + "&type=track");
+                var request = new RestRequest();
+                request.AddHeader("Authorization", $"Bearer {accessToken}");
+                var response = await client.GetAsync(request);
+                if (response.IsSuccessful)
+                {
+                    var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
+                    var songTrack = spotifySong.tracks.items.FirstOrDefault();
+
+                    AddMetaData(songTrack, fullPath);
+            }
+
+
+            return "completed";
             }
 
             return null;
@@ -94,6 +107,47 @@ namespace Songerr.Services
             return null;
         }
 
+        public static Dictionary<string, string> GetFileDetails(string folderPath)
+        {
+            string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
+            Dictionary<string, string> fileDetails = new Dictionary<string, string>();
+
+            foreach (string file in files)
+            {
+                string fullPath = file;
+                string fileNameWithoutPath = Path.GetFileNameWithoutExtension(file);
+                fileDetails.Add(fullPath, fileNameWithoutPath);
+            }
+
+            return fileDetails;
+
+        }
+
+        private static string AddMetaData(Item metaData, string fullPath)
+        {
+            try
+            {
+                // Load the file
+                var file = TagLib.File.Create(fullPath);
+
+                // Modify metadata
+                file.Tag.Title = metaData.name;
+                file.Tag.Performers = new[] { metaData.artists[0].name };
+                file.Tag.Album = metaData.album.name;
+                file.Tag.Year = (uint)DateTime.Parse(metaData.album.release_date).Year;
+                // Add or modify other fields as needed
+
+                // Save changes
+                file.Save();
+
+                Console.WriteLine("Metadata updated successfully.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+            }
+            return string.Empty;
+        }
     }
 }
 
