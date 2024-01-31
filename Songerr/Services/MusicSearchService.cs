@@ -1,11 +1,7 @@
-﻿using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using RestSharp;
 using Songerr.Models;
 using System.Net;
-using System.Runtime.CompilerServices;
 
 namespace Songerr.Services
 {
@@ -26,7 +22,7 @@ namespace Songerr.Services
             var spotifyResult = await SearchSpotifyAsync();
             //if (spotifyResult != null)
             //{
-                return spotifyResult;
+            return spotifyResult;
             //}
 
             //// If Spotify didn't find anything, try Deezer API
@@ -51,23 +47,47 @@ namespace Songerr.Services
                 string fullPath = kvp.Key;
                 string fileNameWithoutPath = kvp.Value;
 
-                var client = new RestClient("https://api.spotify.com/v1/search?q=" + fileNameWithoutPath + "&type=track");
-                var request = new RestRequest();
-                request.AddHeader("Authorization", $"Bearer {accessToken}");
-                var response = await client.GetAsync(request);
-                if (response.IsSuccessful)
+                int dashPosition = fileNameWithoutPath.IndexOf("-");
+
+                // Check if dash exists in the string
+                if (dashPosition != -1)
                 {
-                    var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
-                    var songTrack = spotifySong.tracks.items.FirstOrDefault();
+                    string artistName = fileNameWithoutPath.Substring(0, dashPosition).TrimEnd();
+                    string trackName = fileNameWithoutPath.Substring(dashPosition + 1).TrimStart();
 
-                    AddMetaData(songTrack, fullPath);
+                    var client = new RestClient($"https://api.spotify.com/v1/search?q=artist:{artistName}%20track:{trackName}&type=track");
+
+                    var request = new RestRequest();
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
+                    var response = await client.GetAsync(request);
+                    if (response.IsSuccessful)
+                    {
+                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
+                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
+
+                        AddMetaData(songTrack, fullPath);
+                    }
+                }
+                else
+                {
+                    var client = new RestClient("https://api.spotify.com/v1/search?q=" + fileNameWithoutPath + "&type=track");
+                    var request = new RestRequest();
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
+                    var response = await client.GetAsync(request);
+                    if (response.IsSuccessful)
+                    {
+                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
+                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
+
+                        AddMetaData(songTrack, fullPath);
+                    }
+                }
+
+
+
             }
 
-
-            return "completed";
-            }
-
-            return null;
+            return "Completed";
         }
 
 
@@ -135,10 +155,26 @@ namespace Songerr.Services
                 file.Tag.Performers = new[] { metaData.artists[0].name };
                 file.Tag.Album = metaData.album.name;
                 file.Tag.Year = (uint)DateTime.Parse(metaData.album.release_date).Year;
+                file.Tag.Track = (uint)metaData.track_number;
                 // Add or modify other fields as needed
 
                 // Save changes
                 file.Save();
+
+                string newDirectoryPath = Path.Combine(Path.GetDirectoryName(fullPath), metaData.album.name);
+
+                if (!Directory.Exists(newDirectoryPath))
+                {
+                    Directory.CreateDirectory(newDirectoryPath);
+                }
+
+                var newFullFilePath = Path.Combine(newDirectoryPath, Path.GetFileName(fullPath));
+
+                File.Move(fullPath, newFullFilePath);
+
+                string newFileName = Path.Combine(newDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
+
+                File.Move(newFullFilePath, newFileName);
 
                 Console.WriteLine("Metadata updated successfully.");
             }
