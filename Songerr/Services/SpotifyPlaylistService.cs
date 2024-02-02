@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace Songerr.Services
 {
-    public class SpotifyService : ISpotifyService
+    public class SpotifyPlaylistService : ISpotifyService
     {
         private readonly string _clientId;
         private readonly string _clientSecret;
 
-        public SpotifyService(string clientId, string clientSecret)
+        public SpotifyPlaylistService(string clientId, string clientSecret)
         {
             _clientId = clientId;
             _clientSecret = clientSecret;

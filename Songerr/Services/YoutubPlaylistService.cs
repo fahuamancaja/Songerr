@@ -11,11 +11,11 @@ using YoutubeExplode;
 
 namespace Songerr.Services
 {
-    public class PlaylistRetriever : IPlaylistRetriever
+    public class YoutubPlaylistService : IPlaylistRetriever
     {
         private readonly YouTubeService _youtubeService;
 
-        public PlaylistRetriever(string apiKey)
+        public YoutubPlaylistService(string apiKey)
         {
             _youtubeService = new YouTubeService(new BaseClientService.Initializer() { 
              ApiKey = apiKey });

@@ -32,8 +32,7 @@ namespace Songerr.Services
 
         private async Task<string> SearchSpotifyAsync()
         {
-            var fileDetails = GetFileDetails(@"E:\Music");
-
+            string[] fileDetails = Directory.GetFiles(@"E:\Music", "*.*", SearchOption.AllDirectories);
 
             var accessToken = await GetSpotifyAccessTokenAsync();
 
@@ -41,56 +40,26 @@ namespace Songerr.Services
             {
                 throw new Exception("Failed to retrieve access token.");
             }
-
-            foreach (KeyValuePair<string, string> kvp in fileDetails)
+            
+            var resultList = new List<string>();
+            foreach (string path in fileDetails)
             {
-                string fullPath = kvp.Key;
-                string fileNameWithoutPath = kvp.Value;
-
-                int dashPosition = fileNameWithoutPath.IndexOf("-");
-
-                // Check if dash exists in the string
-                if (dashPosition != -1)
-                {
-                    string artistName = fileNameWithoutPath.Substring(0, dashPosition).TrimEnd();
-                    string trackName = fileNameWithoutPath.Substring(dashPosition + 1).TrimStart();
-
-                    var client = new RestClient($"https://api.spotify.com/v1/search?q=artist:{artistName}%20track:{trackName}&type=track");
-
-                    var request = new RestRequest();
-                    request.AddHeader("Authorization", $"Bearer {accessToken}");
-                    var response = await client.GetAsync(request);
-                    if (response.IsSuccessful)
-                    {
-                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
-                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
-
-                        AddMetaData(songTrack, fullPath);
-                    }
-                }
-                else
-                {
-                    var client = new RestClient("https://api.spotify.com/v1/search?q=" + fileNameWithoutPath + "&type=track");
-                    var request = new RestRequest();
-                    request.AddHeader("Authorization", $"Bearer {accessToken}");
-                    var response = await client.GetAsync(request);
-                    if (response.IsSuccessful)
-                    {
-                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
-                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
-
-                        AddMetaData(songTrack, fullPath);
-                    }
-                }
-
-
-
+                var result = await SearchSpotifyStructure(path);
+                resultList.Add(result);
             }
 
-            return "Completed";
+            var results = CalculateCompletionRate(resultList);
+
+            return results;
         }
 
-
+        private static string CalculateCompletionRate(List<string> list)
+        {
+            int totalCount = list.Count;
+            int completeCount = list.Count(x => x.ToLower() == "complete"); // Assuming a non-empty string is considered complete
+            double completionRate = (double)completeCount / totalCount;
+            return $"{completeCount}/{totalCount} completed";
+        }
 
         //private async Task<DeezerSong> SearchDeezerAsync(string songName)
         //{
@@ -127,22 +96,6 @@ namespace Songerr.Services
             return null;
         }
 
-        public static Dictionary<string, string> GetFileDetails(string folderPath)
-        {
-            string[] files = Directory.GetFiles(folderPath, "*.*", SearchOption.AllDirectories);
-            Dictionary<string, string> fileDetails = new Dictionary<string, string>();
-
-            foreach (string file in files)
-            {
-                string fullPath = file;
-                string fileNameWithoutPath = Path.GetFileNameWithoutExtension(file);
-                fileDetails.Add(fullPath, fileNameWithoutPath);
-            }
-
-            return fileDetails;
-
-        }
-
         private static string AddMetaData(Item metaData, string fullPath)
         {
             try
@@ -151,7 +104,7 @@ namespace Songerr.Services
                 var file = TagLib.File.Create(fullPath);
 
                 // Modify metadata
-                if(metaData != null)
+                if (metaData != null)
                 {
                     file.Tag.Title = metaData.name;
                     file.Tag.Performers = new[] { metaData.artists[0].name };
@@ -190,6 +143,57 @@ namespace Songerr.Services
             }
             return string.Empty;
         }
+        public async Task<string> SearchSpotifyStructure(string fullPath)
+        {
+            if (File.Exists(fullPath))
+            {
+                var accessToken = await GetSpotifyAccessTokenAsync();
+
+                if (accessToken == null)
+                {
+                    throw new Exception("Failed to retrieve access token.");
+                }
+
+                string fileNameWithoutPath = Path.GetFileNameWithoutExtension(fullPath);
+
+                int dashPosition = fileNameWithoutPath.IndexOf("-");
+
+                // Check if dash exists in the string
+                if (dashPosition != -1)
+                {
+                    string artistName = fileNameWithoutPath.Substring(0, dashPosition).TrimEnd();
+                    string trackName = fileNameWithoutPath.Substring(dashPosition + 1).TrimStart();
+
+                    var client = new RestClient($"https://api.spotify.com/v1/search?q=artist:{artistName}%20track:{trackName}&type=track");
+
+                    var request = new RestRequest();
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
+                    var response = await client.GetAsync(request);
+                    if (response.IsSuccessful)
+                    {
+                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
+                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
+
+                        AddMetaData(songTrack, fullPath);
+                    }
+                }
+                else
+                {
+                    var client = new RestClient("https://api.spotify.com/v1/search?q=" + fileNameWithoutPath + "&type=track");
+                    var request = new RestRequest();
+                    request.AddHeader("Authorization", $"Bearer {accessToken}");
+                    var response = await client.GetAsync(request);
+                    if (response.IsSuccessful)
+                    {
+                        var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
+                        var songTrack = spotifySong.tracks.items.FirstOrDefault();
+
+                        AddMetaData(songTrack, fullPath);
+                    }
+                }
+                return "complete";
+            }
+            return "File does not exist";
+        }
     }
 }
-

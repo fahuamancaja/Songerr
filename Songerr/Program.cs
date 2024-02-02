@@ -1,6 +1,7 @@
 using Songerr.Services;
 using Microsoft.Extensions.Configuration;
 using Songerr.Models;
+using Songerr;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,16 +22,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Add services to the container.
-builder.Services.AddSingleton<ISpotifyService, SpotifyService>(provider =>
-    new SpotifyService(clientId, clientSecret));
+builder.Services.AddSingleton<ISpotifyService, SpotifyPlaylistService>(provider =>
+    new SpotifyPlaylistService(clientId, clientSecret));
 builder.Services.AddSingleton<IMusicSearchService, MusicSearchService>(provider =>
     new MusicSearchService(clientId,clientSecret));
 builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>
     new SongerrService(apiKey, appName));
-builder.Services.AddSingleton<IPlaylistRetriever, PlaylistRetriever>(provider =>
-    new PlaylistRetriever(apiKey));
+builder.Services.AddSingleton<IPlaylistRetriever, YoutubPlaylistService>(provider =>
+    new YoutubPlaylistService(apiKey));
 
 var app = builder.Build();
+
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -38,6 +41,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseMiddleware<ApiKeyMiddleware>();
+
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
