@@ -32,7 +32,7 @@ namespace Songerr.Services
 
         private async Task<string> SearchSpotifyAsync()
         {
-            var fileDetails = GetFileDetails(@"E:\Test");
+            var fileDetails = GetFileDetails(@"E:\Music");
 
 
             var accessToken = await GetSpotifyAccessTokenAsync();
@@ -151,32 +151,38 @@ namespace Songerr.Services
                 var file = TagLib.File.Create(fullPath);
 
                 // Modify metadata
-                file.Tag.Title = metaData.name;
-                file.Tag.Performers = new[] { metaData.artists[0].name };
-                file.Tag.Album = metaData.album.name;
-                file.Tag.Year = (uint)DateTime.Parse(metaData.album.release_date).Year;
-                file.Tag.Track = (uint)metaData.track_number;
-                // Add or modify other fields as needed
-
-                // Save changes
-                file.Save();
-
-                string newDirectoryPath = Path.Combine(Path.GetDirectoryName(fullPath), metaData.album.name);
-
-                if (!Directory.Exists(newDirectoryPath))
+                if(metaData != null)
                 {
-                    Directory.CreateDirectory(newDirectoryPath);
+                    file.Tag.Title = metaData.name;
+                    file.Tag.Performers = new[] { metaData.artists[0].name };
+                    file.Tag.Album = metaData.album.name;
+                    DateTime tempDate;
+                    file.Tag.Year = DateTime.TryParse(metaData.album.release_date, out tempDate) ? (uint)tempDate.Year : 0;
+
+                    file.Tag.Track = (uint)metaData.track_number;
+                    // Add or modify other fields as needed
+
+                    // Save changes
+                    file.Save();
+                    string newDirectoryPath = Path.Combine(Path.GetDirectoryName(fullPath), metaData.album.name);
+
+                    if (!Directory.Exists(newDirectoryPath))
+                    {
+                        Directory.CreateDirectory(newDirectoryPath);
+                    }
+
+                    var newFullFilePath = Path.Combine(newDirectoryPath, Path.GetFileName(fullPath));
+
+                    File.Move(fullPath, newFullFilePath);
+
+                    string newFileName = Path.Combine(newDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
+
+                    File.Move(newFullFilePath, newFileName);
+
+                    Console.WriteLine("Metadata updated successfully.");
+
                 }
 
-                var newFullFilePath = Path.Combine(newDirectoryPath, Path.GetFileName(fullPath));
-
-                File.Move(fullPath, newFullFilePath);
-
-                string newFileName = Path.Combine(newDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
-
-                File.Move(newFullFilePath, newFileName);
-
-                Console.WriteLine("Metadata updated successfully.");
             }
             catch (Exception ex)
             {
