@@ -1,5 +1,8 @@
 ﻿using Google.Apis.YouTube.v3;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Songerr.Application.Command;
+using Songerr.Models;
 using Songerr.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -14,18 +17,15 @@ namespace Songerr.Controllers
         private readonly IMusicSearchService _musicSearchService;
         private readonly IPlaylistRetriever _playlistRetrieverService;
         private readonly ISpotifyService _spotifyService;
+        private readonly IMediator _mediator;
 
-        public SongerrController(ISongerrService songerrService, IMusicSearchService musicSearchService, IPlaylistRetriever playlistRetrieverService, ISpotifyService spotifyService)
+        public SongerrController(ISongerrService songerrService, IMusicSearchService musicSearchService, IPlaylistRetriever playlistRetrieverService, ISpotifyService spotifyService, IMediator mediator)
         {
             _songerrService = songerrService;
             _musicSearchService = musicSearchService;
             _playlistRetrieverService = playlistRetrieverService;
             _spotifyService = spotifyService;
-        }
-
-        public class SongInput
-        {
-            public List<string> Titles { get; set; }
+            _mediator = mediator;
         }
 
         [HttpPost]
@@ -35,29 +35,19 @@ namespace Songerr.Controllers
             var searchResults = new List<string>();
             foreach (var title in input.Titles)
             {
-                var mp3Path = await _songerrService.DownloadFirstVideoAsMp3(title);
-                var searchResult = await _musicSearchService.SearchSpotifyStructure(mp3Path);
+                var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Title = title });
+                var searchResult = await _mediator.Send(new SearchSpotifyStructureCommand { Mp3Path = mp3Path });
 
                 mp3PathResults.Add(mp3Path);
                 searchResults.Add(searchResult);
             }
 
             var calculatedComplete = CalculateCompletionRate(searchResults);
+            CheckAndCreateLogFile(mp3PathResults.ToString(), calculatedComplete);
             return Ok(calculatedComplete);
         }
 
-        [HttpGet("GetSongInfo")]
-        public async Task<IActionResult> GetSongInfo()
-        {
-            var songInfo = await _musicSearchService.GetSongInfoAsync();
 
-            if (songInfo == null)
-            {
-                return NotFound($"No song found with the name.");
-            }
-
-            return Ok(songInfo);
-        }
         [HttpGet("GetPlaylistTitles")]
         public async Task<IActionResult> GetPlaylistTitles(string playlistId)
         {
@@ -104,5 +94,4 @@ namespace Songerr.Controllers
 
     }
 
-}
 }

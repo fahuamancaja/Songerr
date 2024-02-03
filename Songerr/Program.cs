@@ -2,6 +2,8 @@ using Songerr.Services;
 using Microsoft.Extensions.Configuration;
 using Songerr.Models;
 using Songerr;
+using Microsoft.AspNetCore.Hosting;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,6 +23,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add MediatR
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
+
 // Add services to the container.
 builder.Services.AddSingleton<ISpotifyService, SpotifyPlaylistService>(provider =>
     new SpotifyPlaylistService(clientId, clientSecret));
@@ -30,6 +35,7 @@ builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>
     new SongerrService(apiKey, appName));
 builder.Services.AddSingleton<IPlaylistRetriever, YoutubPlaylistService>(provider =>
     new YoutubPlaylistService(apiKey));
+
 
 var app = builder.Build();
 
