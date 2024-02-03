@@ -4,6 +4,7 @@
     using Google.Apis.YouTube.v3;
     using Newtonsoft.Json.Linq;
     using System.IO;
+    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using YoutubeDLSharp;
 
@@ -60,13 +61,6 @@
                     artist = new string(artist.Where(c => !Path.GetInvalidPathChars().Contains(c)).ToArray());
                     artist = artist.Replace(' ', '_').Replace('.', '_').Replace('-', '_');
 
-                    // Define the root directory path
-                    string rootDirectoryPath = @"E:\Music";
-
-                    // Create a directory named after the channel title under the root directory
-                    string directoryPath = Path.Combine(rootDirectoryPath, artist);
-                    Directory.CreateDirectory(directoryPath);
-
                     // Download the audio of the video
                     var youtubeDl = new YoutubeDL();
                     var result = await youtubeDl.RunAudioDownload("https://www.youtube.com/watch?v=" + firstVideoId);
@@ -75,14 +69,33 @@
                     string outputMp3Path = result.Data;
                     string titleName = Path.GetFileName(outputMp3Path);
 
+                    titleName = RemoveBracesAndTrailingSpaces(titleName);
+
+                    // Define the root directory path
+                    string rootDirectoryPath = @"E:\Music";
+                    string directoryPath = rootDirectoryPath;    
+                    
+                    if (title.Contains('-')) // Check if title contains a dash
+                    {
+                        string[] parts = title.Split('-');
+
+                        string newArtist = parts[0].Trim(); // Trim() is used to remove any leading or trailing whitespace
+                        string newTitle = parts[1].Trim();
+
+                        // Create a directory named after the channel title under the root directory
+                        directoryPath = Path.Combine(rootDirectoryPath, newArtist);
+                        Directory.CreateDirectory(directoryPath);
+                    }
+                    else
+                    {
+                        directoryPath = Path.Combine(rootDirectoryPath, artist);
+                        Directory.CreateDirectory(directoryPath);
+                    }
 
                     // Rename the output file
-                    string newFileName = Path.ChangeExtension(title, ".mp3");
+                    string newFileName = Path.ChangeExtension(titleName, ".mp3");
 
-                    //if (outputMp3Path.Contains("opus"))
-                    //{
-                    //    newFileName = $"{titleName}.opus";
-                    //}
+                    // New output path and filename
                     string newFilePath = Path.Combine(directoryPath, newFileName);
 
                     // Check if outputMp3Path exists
@@ -111,5 +124,16 @@
                 throw;
             }
         }
+        public static string RemoveBracesAndTrailingSpaces(string input)
+        {
+            // Use RegEx to remove braces and their contents
+            string result = Regex.Replace(input, "\\[[^\\]]*\\]", string.Empty);
+
+            // Use Trim() to remove trailing whitespace
+            result = result.Trim();
+
+            return result;
+        }
+
     }
 }
