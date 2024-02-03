@@ -33,7 +33,8 @@ namespace Songerr.Services
             {
                 var title = video.Title;
                 var author = video.Author;
-                var spTitles = "\"" + RemoveSpecialCharacters($"{author} - {title},") + "\"" + ",";
+                var spTitles = $"{author} - {title}";
+                spTitles = RemoveSpecialCharacters(spTitles);
                 titles.Add(spTitles);
             }
 

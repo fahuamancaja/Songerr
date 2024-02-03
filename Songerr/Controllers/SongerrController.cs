@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Songerr.Application.Command;
+using Songerr.Application.Query;
 using Songerr.Models;
 using Songerr.Services;
 using System.Collections.Generic;
@@ -47,22 +48,22 @@ namespace Songerr.Controllers
             return Ok(calculatedComplete);
         }
 
-
-        [HttpGet("GetPlaylistTitles")]
-        public async Task<IActionResult> GetPlaylistTitles(string playlistId)
+        [HttpGet("GetYouTubeMusicPlaylistTitles")]
+        public async Task<IActionResult> GetYouTubeMusicPlaylistTitles(string playlistId)
         {
-
-            var request = await _playlistRetrieverService.GetPlaylistTitlesAsync(playlistId);
-
-            return Ok(request);
+            var request = new GetYouTubeMusicPlaylistTitlesQuery { PlaylistId = playlistId };
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         [HttpGet("GetSpotifyPlaylistTitles")]
         public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
         {
-            var request = await _spotifyService.GetSongTitlesAndArtistsAsync(playlistId);
-            return Ok(request);
+            var request = new GetSpotifyPlaylistTitlesQuery { PlaylistId = playlistId };
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
+
         private static string CalculateCompletionRate(List<string> list)
         {
             int totalCount = list.Count;
