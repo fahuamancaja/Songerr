@@ -2,6 +2,7 @@
 using RestSharp;
 using Songerr.Models;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Songerr.Services
 {
@@ -103,7 +104,6 @@ namespace Songerr.Services
                 // Load the file
                 var file = TagLib.File.Create(fullPath);
 
-                // Modify metadata
                 if (metaData != null)
                 {
                     file.Tag.Title = metaData.name;
@@ -117,24 +117,36 @@ namespace Songerr.Services
 
                     // Save changes
                     file.Save();
-                    string newDirectoryPath = Path.Combine(Path.GetDirectoryName(fullPath), metaData.album.name);
 
-                    if (!Directory.Exists(newDirectoryPath))
+                    // Define the artist directory path
+                    string artistDirectoryPath = Path.Combine(Path.GetDirectoryName(fullPath), metaData.artists[0].name);
+
+                    // Define the album directory path
+                    string albumDirectoryPath = Path.Combine(artistDirectoryPath, metaData.album.name);
+
+                    // Create artist directory if it doesn't exist
+                    if (!Directory.Exists(artistDirectoryPath))
                     {
-                        Directory.CreateDirectory(newDirectoryPath);
+                        Directory.CreateDirectory(artistDirectoryPath);
                     }
 
-                    var newFullFilePath = Path.Combine(newDirectoryPath, Path.GetFileName(fullPath));
+                    // Create album directory if it doesn't exist
+                    if (!Directory.Exists(albumDirectoryPath))
+                    {
+                        Directory.CreateDirectory(albumDirectoryPath);
+                    }
 
+                    // Move the song file to the album directory
+                    var newFullFilePath = Path.Combine(albumDirectoryPath, Path.GetFileName(fullPath));
                     File.Move(fullPath, newFullFilePath);
 
-                    string newFileName = Path.Combine(newDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
-
+                    // Rename the song file
+                    string newFileName = Path.Combine(albumDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
                     File.Move(newFullFilePath, newFileName);
 
                     Console.WriteLine("Metadata updated successfully.");
-
                 }
+
 
             }
             catch (Exception ex)
@@ -162,7 +174,10 @@ namespace Songerr.Services
                 if (dashPosition != -1)
                 {
                     string artistName = fileNameWithoutPath.Substring(0, dashPosition).TrimEnd();
+
                     string trackName = fileNameWithoutPath.Substring(dashPosition + 1).TrimStart();
+                    trackName = Regex.Replace(trackName, @"\(.*?\)|^\s+|\s+$", "");
+
 
                     var client = new RestClient($"https://api.spotify.com/v1/search?q=artist:{artistName}%20track:{trackName}&type=track");
 
