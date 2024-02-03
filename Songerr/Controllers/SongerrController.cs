@@ -44,7 +44,7 @@ namespace Songerr.Controllers
             }
 
             var calculatedComplete = CalculateCompletionRate(searchResults);
-            CheckAndCreateLogFile(mp3PathResults.ToString(), calculatedComplete);
+            CheckAndCreateLogFile(mp3PathResults, calculatedComplete);
             return Ok(calculatedComplete);
         }
 
@@ -72,14 +72,17 @@ namespace Songerr.Controllers
             return $"{completeCount}/{totalCount} completed";
         }
 
-        private void CheckAndCreateLogFile(string mp3Path, string searchResult)
+        private void CheckAndCreateLogFile(List<string> mp3Path, string searchResult)
         {
             string logFilePath = "mp3.log";
             if (!System.IO.File.Exists(logFilePath))
             {
                 using (StreamWriter sw = System.IO.File.CreateText(logFilePath))
                 {
-                    sw.WriteLine($"MP3 Path: {mp3Path}");
+                    foreach(var song in mp3Path)
+                    {
+                        sw.WriteLine($"MP3 Path: {song}");
+                    }
                     sw.WriteLine($"Search Result: {searchResult}");
                 }
             }
@@ -87,7 +90,10 @@ namespace Songerr.Controllers
             {
                 using (StreamWriter sw = System.IO.File.AppendText(logFilePath))
                 {
-                    sw.WriteLine($"MP3 Path: {mp3Path}");
+                    foreach (var song in mp3Path)
+                    {
+                        sw.WriteLine($"MP3 Path: {song}");
+                    }
                     sw.WriteLine($"Search Result: {searchResult}");
                 }
             }
