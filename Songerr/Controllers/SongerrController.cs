@@ -1,12 +1,9 @@
-﻿using Google.Apis.YouTube.v3;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Songerr.Application.Command;
 using Songerr.Application.Query;
 using Songerr.Models;
 using Songerr.Services;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Songerr.Controllers
 {
@@ -43,9 +40,9 @@ namespace Songerr.Controllers
                 searchResults.Add(searchResult);
             }
 
-            var calculatedComplete = CalculateCompletionRate(searchResults);
-            CheckAndCreateLogFile(mp3PathResults, calculatedComplete);
-            return Ok(calculatedComplete);
+            var fullyCompleted = CheckAndCreateLogFile(mp3PathResults, searchResults);
+            var response = $"{fullyCompleted} / {searchResults.Count}";
+            return Ok(response);
         }
 
         [HttpGet("GetYouTubeMusicPlaylistTitles")]
@@ -64,26 +61,37 @@ namespace Songerr.Controllers
             return Ok(response);
         }
 
-        private static string CalculateCompletionRate(List<string> list)
+        private int CheckAndCreateLogFile(List<string> mp3Path, List<string> searchResult)
         {
-            int totalCount = list.Count;
-            int completeCount = list.Count(x => x.ToLower() == "complete"); // Assuming a non-empty string is considered complete
-            double completionRate = (double)completeCount / totalCount;
-            return $"{completeCount}/{totalCount} completed";
-        }
-
-        private void CheckAndCreateLogFile(List<string> mp3Path, string searchResult)
-        {
-            string logFilePath = "mp3.log";
+            var completedCounter = 0;
+            string logFilePath = "Logs/mp3.log";
             if (!System.IO.File.Exists(logFilePath))
             {
                 using (StreamWriter sw = System.IO.File.CreateText(logFilePath))
                 {
-                    foreach(var song in mp3Path)
+                    foreach (var song in mp3Path)
                     {
-                        sw.WriteLine($"MP3 Path: {song}");
+                        sw.WriteLine($"Original MP3 Path: {song}");
                     }
-                    sw.WriteLine($"Search Result: {searchResult}");
+
+                    foreach (var newSong in searchResult)
+                    {
+                        if (newSong == string.Empty)
+                        {
+                            sw.WriteLine($"No metadata found for: {newSong}");
+                        }
+                        if (newSong == "file does not exist")
+                        {
+                            sw.WriteLine($"Cannot find file source for: {newSong}");
+
+                        }
+                        else
+                        {
+                            sw.Write($"New song added with metadata: {newSong}");
+                            completedCounter++;
+                        }
+
+                    }
                 }
             }
             else
@@ -92,13 +100,29 @@ namespace Songerr.Controllers
                 {
                     foreach (var song in mp3Path)
                     {
-                        sw.WriteLine($"MP3 Path: {song}");
+                        sw.WriteLine($"Original MP3 Path: {song}");
                     }
-                    sw.WriteLine($"Search Result: {searchResult}");
+                    foreach (var newSong in searchResult)
+                    {
+                        if (newSong == string.Empty)
+                        {
+                            sw.WriteLine($"No metadata found for: {newSong}");
+                        }
+                        if (newSong == "file does not exist")
+                        {
+                            sw.WriteLine($"Cannot find file source for: {newSong}");
+
+                        }
+                        else
+                        {
+                            sw.Write($"New song added with metadata: newSong");
+                            completedCounter++;
+                        }
+
+                    }
                 }
             }
+            return completedCounter;
         }
-
     }
-
 }

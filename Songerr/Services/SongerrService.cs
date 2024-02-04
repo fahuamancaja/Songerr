@@ -3,6 +3,7 @@
     using Google.Apis.Services;
     using Google.Apis.YouTube.v3;
     using Newtonsoft.Json.Linq;
+    using Songerr.Models;
     using System.IO;
     using System.Net.Http;
     using System.Text.RegularExpressions;
@@ -12,14 +13,17 @@
     public class SongerrService : ISongerrService
     {
         private readonly YouTubeService _youtubeService;
+        private readonly SongerrSettings _songerrSettings;
 
-        public SongerrService(string apiKey, string appName)
+        public SongerrService(string apiKey, string appName, SongerrSettings songerrSettings)
         {
             _youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = apiKey,
                 ApplicationName = appName
             });
+
+            _songerrSettings = songerrSettings;
         }
 
         public async ValueTask<string> DownloadFirstVideoAsMp3(string videoTitle)
@@ -43,7 +47,8 @@
             var searchListRequest = _youtubeService.Search.List("snippet");
             searchListRequest.Q = videoTitle;
             searchListRequest.Type = "video";
-            searchListRequest.MaxResults = 2;
+            searchListRequest.MaxResults = _songerrSettings.MaxResults;
+
 
             var searchListResponse = await searchListRequest.ExecuteAsync();
             var videoIds = searchListResponse.Items.Select(item => item.Id.VideoId).ToList();

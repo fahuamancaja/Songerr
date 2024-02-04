@@ -144,7 +144,7 @@ namespace Songerr.Services
                     string newFileName = Path.Combine(albumDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
                     File.Move(newFullFilePath, newFileName);
 
-                    Console.WriteLine("Metadata updated successfully.");
+                    return newFileName;
                 }
 
 
@@ -169,6 +169,8 @@ namespace Songerr.Services
                 string fileNameWithoutPath = Path.GetFileNameWithoutExtension(fullPath);
 
                 int dashPosition = fileNameWithoutPath.IndexOf("-");
+
+                var newFullPath = string.Empty;
 
                 // Check if dash exists in the string
                 if (dashPosition != -1)
@@ -203,12 +205,12 @@ namespace Songerr.Services
                         var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
                         var songTrack = spotifySong.tracks.items.FirstOrDefault();
 
-                        AddMetaData(songTrack, fullPath);
+                        newFullPath = AddMetaData(songTrack, fullPath);
                     }
                 }
-                return "complete";
+                return newFullPath;
             }
-            return "File does not exist";
+            return "file does not exist";
         }
     }
 }

@@ -25,4 +25,8 @@
     <PackageReference Include="YoutubeExplode" Version="6.3.12" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>

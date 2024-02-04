@@ -18,6 +18,10 @@ string appName = builder.Configuration["AppSettings:Youtube:AppName"];
 string clientId = builder.Configuration["AppSettings:Spotify:client_id"];
 string clientSecret = builder.Configuration["AppSettings:Spotify:client_secret"];
 
+//Get Songerr Settings
+var songerrSettings = builder.Configuration.GetSection("Songerr").Get<SongerrSettings>();
+
+
 // Add services to the container.
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -32,7 +36,7 @@ builder.Services.AddSingleton<ISpotifyService, SpotifyPlaylistService>(provider 
 builder.Services.AddSingleton<IMusicSearchService, MusicSearchService>(provider =>
     new MusicSearchService(clientId,clientSecret));
 builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>
-    new SongerrService(apiKey, appName));
+    new SongerrService(apiKey, appName, songerrSettings));
 builder.Services.AddSingleton<IPlaylistRetriever, YoutubPlaylistService>(provider =>
     new YoutubPlaylistService(apiKey));
 
