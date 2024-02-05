@@ -4,11 +4,21 @@ using Songerr.Models;
 using Songerr;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Build Configuration
 builder.Configuration.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
+
+// Configure Serilog
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .WriteTo.Console() // Ensure console logging is enabled
+    .CreateLogger();
+
+// Add Serilog to the logging pipeline
+builder.Host.UseSerilog();
 
 // Get settings from Configuration Youtube
 string apiKey = builder.Configuration["AppSettings:Youtube:ApiKey"];
@@ -43,16 +53,10 @@ builder.Services.AddSingleton<IPlaylistRetriever, YoutubPlaylistService>(provide
 
 var app = builder.Build();
 
-
-
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseMiddleware<ApiKeyMiddleware>();
-
 
 app.UseHttpsRedirection();
 app.UseAuthorization();

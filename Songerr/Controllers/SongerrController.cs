@@ -4,6 +4,10 @@ using Songerr.Application.Command;
 using Songerr.Application.Query;
 using Songerr.Models;
 using Songerr.Services;
+using System;
+using System.Collections.Generic;
+using System.IO;
+
 
 namespace Songerr.Controllers
 {
@@ -61,10 +65,20 @@ namespace Songerr.Controllers
             return Ok(response);
         }
 
+
         private int CheckAndCreateLogFile(List<string> mp3Path, List<string> searchResult)
         {
             var completedCounter = 0;
-            string logFilePath = "Logs/mp3.log";
+            string logFolderPath = "Logs";
+            string logFileName = "mp3.log";
+            string logFilePath = Path.Combine(logFolderPath, logFileName);
+
+            // Create the directory if it doesn't exist
+            if (!Directory.Exists(logFolderPath))
+            {
+                Directory.CreateDirectory(logFolderPath);
+            }
+
             if (!System.IO.File.Exists(logFilePath))
             {
                 using (StreamWriter sw = System.IO.File.CreateText(logFilePath))
@@ -78,19 +92,17 @@ namespace Songerr.Controllers
                     {
                         if (newSong == string.Empty)
                         {
-                            sw.WriteLine($"No metadata found for: {newSong}");
+                            sw.WriteLine($"No metadata found song");
                         }
                         if (newSong == "file does not exist")
                         {
-                            sw.WriteLine($"Cannot find file source for: {newSong}");
-
+                            sw.WriteLine($"{newSong}");
                         }
                         else
                         {
-                            sw.Write($"New song added with metadata: {newSong}");
+                            sw.WriteLine($"New song added with metadata: {newSong}");
                             completedCounter++;
                         }
-
                     }
                 }
             }
@@ -102,6 +114,7 @@ namespace Songerr.Controllers
                     {
                         sw.WriteLine($"Original MP3 Path: {song}");
                     }
+
                     foreach (var newSong in searchResult)
                     {
                         if (newSong == string.Empty)
@@ -111,18 +124,17 @@ namespace Songerr.Controllers
                         if (newSong == "file does not exist")
                         {
                             sw.WriteLine($"Cannot find file source for: {newSong}");
-
                         }
                         else
                         {
-                            sw.Write($"New song added with metadata: newSong");
+                            sw.Write($"New song added with metadata: {newSong}");
                             completedCounter++;
                         }
-
                     }
                 }
             }
             return completedCounter;
         }
+
     }
 }
