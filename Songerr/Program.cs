@@ -58,7 +58,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseMiddleware<ApiKeyMiddleware>();
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 app.Run();
