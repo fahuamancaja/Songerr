@@ -1,5 +1,6 @@
 ﻿namespace Songerr.Services
 {
+    using AngleSharp.Dom;
     using Google.Apis.Services;
     using Google.Apis.YouTube.v3;
     using Newtonsoft.Json.Linq;
@@ -112,5 +113,47 @@
 
             return result;
         }
+
+        public async ValueTask<string> GetMp3BasedOnUrl(string videoId)
+        {
+            try
+            {
+                var firstVideoId = ParseVideoUrl(videoId);
+
+                if (firstVideoId == null)
+                {
+                    throw new ArgumentNullException(nameof(firstVideoId), "First video ID cannot be null.");
+                }
+
+                var videoInfo = await GetVideoInfo(firstVideoId);
+                var outputMp3Path = await DownloadVideoAsMp3(firstVideoId);
+                return MoveFileToCorrectLocation(videoInfo, outputMp3Path);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                throw;
+            }
+        }
+
+        private static string ParseVideoUrl(string videoUrl)
+        {
+            // Updated regex to match m.youtube.com and optional parameters
+            var regex = new Regex(@"(?:youtu\.be\/|youtube\.com\/watch\?v=|m\.youtube\.com\/watch\?v=)([^&?]+)(?:.*)?", RegexOptions.IgnoreCase);
+
+            // Match the URL against the regex
+            var match = regex.Match(videoUrl);
+
+            // If a match is found, return the video ID; otherwise, return null
+            if (match.Success)
+            {
+                return match.Groups[1].Value;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
     }
 }
