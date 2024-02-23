@@ -5,6 +5,8 @@ using Songerr;
 using Microsoft.AspNetCore.Hosting;
 using System.Reflection;
 using Serilog;
+using Songerr.Repository;
+using AutoMapper;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -28,7 +30,10 @@ string appName = builder.Configuration["AppSettings:Youtube:AppName"];
 string clientId = builder.Configuration["AppSettings:Spotify:client_id"];
 string clientSecret = builder.Configuration["AppSettings:Spotify:client_secret"];
 
-//Get Songerr Settings
+// Automampper
+builder.Services.AddAutoMapper(typeof(Program));
+
+// Get Songerr Settings
 var songerrSettings = builder.Configuration.GetSection("Songerr").Get<SongerrSettings>();
 
 
@@ -41,15 +46,18 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
 // Add services to the container.
+builder.Services.AddSingleton<IYoutubeDlRepository, YoutubeDlRepository>();
 builder.Services.AddSingleton<ISpotifyService, SpotifyPlaylistService>(provider =>
     new SpotifyPlaylistService(clientId, clientSecret));
 builder.Services.AddSingleton<IMusicSearchService, MusicSearchService>(provider =>
     new MusicSearchService(clientId,clientSecret));
 builder.Services.AddSingleton<ISongerrService, SongerrService>(provider =>
-    new SongerrService(apiKey, appName, songerrSettings));
+    new SongerrService(songerrSettings, new YoutubeDlRepository(provider.GetRequiredService<IMapper>()), new YoutubeRepository(apiKey, appName, provider.GetRequiredService<IMapper>()), new ParserService()));
+builder.Services.AddSingleton<IYoutubeRepository, YoutubeRepository>(provider =>
+    new YoutubeRepository(apiKey, appName, provider.GetRequiredService<IMapper>()));
 builder.Services.AddSingleton<IPlaylistRetriever, YoutubPlaylistService>(provider =>
-    new YoutubPlaylistService(apiKey));
-
+    new YoutubPlaylistService(apiKey, new YoutubeRepository(apiKey,appName, provider.GetRequiredService<IMapper>()), new YoutubeDlRepository(provider.GetRequiredService<IMapper>()), new ParserService(), new SongerrService(songerrSettings, new YoutubeDlRepository(provider.GetRequiredService<IMapper>()), new YoutubeRepository(apiKey, appName, provider.GetRequiredService<IMapper>()), new ParserService()),new MusicSearchService(clientId, clientSecret)));
+builder.Services.AddSingleton<IParserService, ParserService>();
 
 var app = builder.Build();
 

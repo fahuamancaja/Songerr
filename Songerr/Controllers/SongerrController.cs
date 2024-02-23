@@ -49,10 +49,10 @@ namespace Songerr.Controllers
             return Ok(response);
         }
 
-        [HttpGet("GetYouTubeMusicPlaylistTitles")]
-        public async Task<IActionResult> GetYouTubeMusicPlaylistTitles(string playlistId)
+        [HttpGet("DownloadPlaylistSongs")]
+        public async Task<IActionResult> DownloadPlaylistSongs(string playlistId)
         {
-            var request = new GetYouTubeMusicPlaylistTitlesQuery { PlaylistId = playlistId };
+            var request = new DownloadPlaylistSongsCommand { PlaylistId = playlistId };
             var response = await _mediator.Send(request);
             return Ok(response);
         }

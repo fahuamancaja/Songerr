@@ -1,9 +1,12 @@
-﻿namespace Songerr.Services
+﻿using Songerr.Models;
+using YoutubeExplode.Playlists;
+
+namespace Songerr.Services
 {
     public interface ISongerrService
     {
-        ValueTask<string> DownloadFirstVideoAsMp3(string videoTitle);
-        ValueTask<string> GetMp3BasedOnUrl(string videoTitle);
+        ValueTask<string> DownloadFirstVideoAsMp3(PlaylistModel playListVideo);
+        ValueTask<string> GetSingleMp3BasedOnUrl(string videoTitle);
     }
 
 }

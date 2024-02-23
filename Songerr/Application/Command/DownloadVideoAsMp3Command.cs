@@ -19,7 +19,7 @@ namespace Songerr.Application.Command
 
         public async Task<string> Handle(DownloadVideoAsMp3Command request, CancellationToken cancellationToken)
         {
-            return await _songerrService.GetMp3BasedOnUrl(request.Title);
+            return await _songerrService.GetSingleMp3BasedOnUrl(request.Title);
         }
     }
 

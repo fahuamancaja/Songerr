@@ -1,40 +1,35 @@
 ﻿namespace Songerr.Services
 {
-    using AngleSharp.Dom;
-    using Google.Apis.Services;
-    using Google.Apis.YouTube.v3;
-    using Newtonsoft.Json.Linq;
     using Songerr.Models;
+    using Songerr.Repository;
     using System.IO;
-    using System.Net.Http;
     using System.Text.RegularExpressions;
     using System.Threading.Tasks;
-    using YoutubeDLSharp;
+    using YoutubeExplode.Playlists;
 
     public class SongerrService : ISongerrService
     {
-        private readonly YouTubeService _youtubeService;
         private readonly SongerrSettings _songerrSettings;
+        private readonly IYoutubeDlRepository _youtubeDlRepository;
+        private readonly IYoutubeRepository _youtubeRepository;
+        private readonly IParserService _parserService;
 
-        public SongerrService(string apiKey, string appName, SongerrSettings songerrSettings)
+        public SongerrService(SongerrSettings songerrSettings, IYoutubeDlRepository youtubeDlRepository, IYoutubeRepository youtubeRepository, IParserService parserService)
         {
-            _youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = apiKey,
-                ApplicationName = appName
-            });
-
             _songerrSettings = songerrSettings;
+            _youtubeDlRepository = youtubeDlRepository;
+            _youtubeRepository = youtubeRepository;
+            _parserService = parserService;
         }
 
-        public async ValueTask<string> DownloadFirstVideoAsMp3(string videoTitle)
+        public async ValueTask<string> DownloadFirstVideoAsMp3(PlaylistModel playListVideo)
         {
             try
             {
-                var firstVideoId = await GetFirstVideoId(videoTitle);
-                var videoInfo = await GetVideoInfo(firstVideoId);
-                var outputMp3Path = await DownloadVideoAsMp3(firstVideoId);
-                return MoveFileToCorrectLocation(videoInfo, outputMp3Path);
+                //var firstVideoId = await GetFirstVideoId(videoTitle);
+                //var videoInfo = await _youtubeRepository.GetVideoInfo(firstVideoId);
+                await _youtubeDlRepository.PlayListDownloadVideoAsMp3(playListVideo);
+                return _parserService.MoveFileToCorrectLocation(playListVideo);
             }
             catch (Exception ex)
             {
@@ -45,89 +40,24 @@
 
         private async Task<string> GetFirstVideoId(string videoTitle)
         {
-            var searchListRequest = _youtubeService.Search.List("snippet");
-            searchListRequest.Q = videoTitle;
-            searchListRequest.Type = "video";
-            searchListRequest.MaxResults = _songerrSettings.MaxResults;
-
-
-            var searchListResponse = await searchListRequest.ExecuteAsync();
-            var videoIds = searchListResponse.Items.Select(item => item.Id.VideoId).ToList();
-            var videoDetailsRequest = _youtubeService.Videos.List("statistics");
-            videoDetailsRequest.Id = string.Join(",", videoIds);
-
-            var videoDetailsResponse = await videoDetailsRequest.ExecuteAsync();
-            var sortedVideos = videoDetailsResponse.Items.OrderByDescending(item => item.Statistics.ViewCount ?? 0).ToList();
-
-            return sortedVideos[0].Id;
+            var videoIds = await _youtubeRepository.YoutubeSearchListGetIds(videoTitle, _songerrSettings.MaxResults);
+            return await _youtubeRepository.YoutubeSortByStatsReturnFirst(videoIds);
         }
 
-        private async Task<(string Title, string Artist)> GetVideoInfo(string videoId)
+        public async ValueTask<string> GetSingleMp3BasedOnUrl(string videoId)
         {
-            var apiUrl = $"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={videoId}&key={_youtubeService.ApiKey}";
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(apiUrl);
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                JObject parsed = JObject.Parse(jsonResponse);
-                string title = parsed["items"][0]["snippet"]["title"].ToString();
-                string artist = parsed["items"][0]["snippet"]["channelTitle"].ToString();
-
-                artist = new string(artist.Where(c => !Path.GetInvalidPathChars().Contains(c)).ToArray());
-                artist = artist.Replace(' ', '_').Replace('.', '_').Replace('-', '_');
-
-                return (title, artist);
-            }
-        }
-
-        private async Task<string> DownloadVideoAsMp3(string videoId)
-        {
-            var youtubeDl = new YoutubeDL();
-            var result = await youtubeDl.RunAudioDownload($"https://www.youtube.com/watch?v={videoId}");
-            return result.Data;
-        }
-
-        private string MoveFileToCorrectLocation((string Title, string Artist) videoInfo, string outputMp3Path)
-        {
-            string titleName = RemoveBracesAndTrailingSpaces(Path.GetFileName(outputMp3Path));
-            string rootDirectoryPath = @"E:\Music";
-
-            string newFileName = Path.ChangeExtension(titleName, ".mp3");
-            string newFilePath = Path.Combine(rootDirectoryPath, newFileName);
-
-            // Copy the file to the new location, overwriting if it already exists
-            File.Copy(outputMp3Path, newFilePath, true);
-
-            // Delete the original file
-            File.Delete(outputMp3Path);
-
-            return newFilePath;
-        }
-
-
-        public static string RemoveBracesAndTrailingSpaces(string input)
-        {
-            string result = Regex.Replace(input, "\\[[^\\]]*\\]", string.Empty);
-            result = result.Trim();
-
-            return result;
-        }
-
-        public async ValueTask<string> GetMp3BasedOnUrl(string videoId)
-        {
+            var playlistModel = new PlaylistModel() { Id = videoId};
             try
             {
-                var firstVideoId = ParseVideoUrl(videoId);
+                _parserService.ParseVideoUrl(playlistModel);
 
-                if (firstVideoId == null)
+                if (playlistModel.Id == null)
                 {
-                    throw new ArgumentNullException(nameof(firstVideoId), "First video ID cannot be null.");
+                    throw new ArgumentNullException(nameof(playlistModel.Id), "Video ID or URL cannot be null.");
                 }
 
-                var videoInfo = await GetVideoInfo(firstVideoId);
-                var outputMp3Path = await DownloadVideoAsMp3(firstVideoId);
-                return MoveFileToCorrectLocation(videoInfo, outputMp3Path);
+                await _youtubeDlRepository.DownloadVideoAsMp3(playlistModel);
+                return _parserService.MoveFileToCorrectLocation(playlistModel);
             }
             catch (Exception ex)
             {
@@ -135,25 +65,5 @@
                 throw;
             }
         }
-
-        private static string ParseVideoUrl(string videoUrl)
-        {
-            // Updated regex to match m.youtube.com and optional parameters
-            var regex = new Regex(@"(?:youtu\.be\/|youtube\.com\/watch\?v=|m\.youtube\.com\/watch\?v=)([^&?]+)(?:.*)?", RegexOptions.IgnoreCase);
-
-            // Match the URL against the regex
-            var match = regex.Match(videoUrl);
-
-            // If a match is found, return the video ID; otherwise, return null
-            if (match.Success)
-            {
-                return match.Groups[1].Value;
-            }
-            else
-            {
-                return null;
-            }
-        }
-
     }
 }
