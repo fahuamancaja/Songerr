@@ -4,7 +4,7 @@ using YoutubeExplode.Videos;
 
 namespace Songerr.Models
 {
-    public class PlaylistModel
+    public class SongModel
     {
         public string PlaylistId { get; set; }
 

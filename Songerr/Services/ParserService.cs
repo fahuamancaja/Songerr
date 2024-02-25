@@ -5,7 +5,7 @@ namespace Songerr.Services
 {
     public class ParserService : IParserService
     {
-        public void ParseVideoUrl(PlaylistModel playlistModel)
+        public void ParseVideoUrl(SongModel playlistModel)
         {
             // Updated regex to match m.youtube.com and optional parameters
             var regex = new Regex(@"(?:youtu\.be\/|youtube\.com\/watch\?v=|m\.youtube\.com\/watch\?v=)([^&?]+)(?:.*)?", RegexOptions.IgnoreCase);
@@ -30,7 +30,7 @@ namespace Songerr.Services
         {
             return Regex.Replace(str, "[^a-zA-Z0-9 ]", "");
         }
-        public string MoveFileToCorrectLocation(PlaylistModel playListModel)
+        public string MoveFileToCorrectLocation(SongModel playListModel)
         {
             string titleName = RemoveBracesAndTrailingSpaces(Path.GetFileName(playListModel.Filepath));
             string rootDirectoryPath = @"E:\Music";

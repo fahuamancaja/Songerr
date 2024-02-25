@@ -4,9 +4,9 @@ namespace Songerr.Services
 {
     public interface IParserService
     {
-        void ParseVideoUrl(PlaylistModel playlistModel);
+        void ParseVideoUrl(SongModel playlistModel);
         string RemoveBracesAndTrailingSpaces(string input);
         string RemoveSpecialCharacters(string str);
-        string MoveFileToCorrectLocation(PlaylistModel playlistModel);
+        string MoveFileToCorrectLocation(SongModel playlistModel);
     }
 }

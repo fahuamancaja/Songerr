@@ -22,7 +22,7 @@
             _parserService = parserService;
         }
 
-        public async ValueTask<string> DownloadFirstVideoAsMp3(PlaylistModel playListVideo)
+        public async ValueTask<string> DownloadFirstVideoAsMp3(SongModel playListVideo)
         {
             try
             {
@@ -46,18 +46,19 @@
 
         public async ValueTask<string> GetSingleMp3BasedOnUrl(string videoId)
         {
-            var playlistModel = new PlaylistModel() { Id = videoId};
+            var songModel = new SongModel() { Id = videoId};
             try
             {
-                _parserService.ParseVideoUrl(playlistModel);
+                _parserService.ParseVideoUrl(songModel);
 
-                if (playlistModel.Id == null)
+                if (songModel.Id == null)
                 {
-                    throw new ArgumentNullException(nameof(playlistModel.Id), "Video ID or URL cannot be null.");
+                    throw new ArgumentNullException(nameof(songModel.Id), "Video ID or URL cannot be null.");
                 }
+                await _youtubeDlRepository.GetSongMetadataFromSongId(songModel);
 
-                await _youtubeDlRepository.DownloadVideoAsMp3(playlistModel);
-                return _parserService.MoveFileToCorrectLocation(playlistModel);
+                await _youtubeDlRepository.DownloadVideoAsMp3(songModel);
+                return _parserService.MoveFileToCorrectLocation(songModel);
             }
             catch (Exception ex)
             {

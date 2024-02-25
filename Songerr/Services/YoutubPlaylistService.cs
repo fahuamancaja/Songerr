@@ -53,7 +53,7 @@ namespace Songerr.Services
         }
         public async Task<List<string>> DownloadPlaylistSongs(string playlistId)
         {
-            var playlistVideo = await _youtubeDlRepository.GetIPlaylistVideoFromPlaylist(playlistId);
+            var playlistVideo = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
 
             var filePaths = new List<string>();
             foreach (var video in playlistVideo)
