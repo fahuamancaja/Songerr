@@ -33,19 +33,15 @@ namespace Songerr.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] SongInput input)
         {
-            var mp3PathResults = new List<string>();
-            var searchResults = new List<string>();
-            foreach (var title in input.Titles)
+            var mp3PathResults = new List<SongModel>();
+            foreach (var url in input.Titles)
             {
-                var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Title = title });
-                var searchResult = await _mediator.Send(new SearchSpotifyStructureCommand { Mp3Path = mp3Path });
+                var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Url = url });
 
                 mp3PathResults.Add(mp3Path);
-                searchResults.Add(searchResult);
             }
 
-            var fullyCompleted = CheckAndCreateLogFile(mp3PathResults, searchResults);
-            var response = $"{fullyCompleted} / {searchResults.Count}";
+            var response = $"Completed {mp3PathResults.Count}";
             return Ok(response);
         }
 
@@ -64,77 +60,5 @@ namespace Songerr.Controllers
             var response = await _mediator.Send(request);
             return Ok(response);
         }
-
-
-        private int CheckAndCreateLogFile(List<string> mp3Path, List<string> searchResult)
-        {
-            var completedCounter = 0;
-            string logFolderPath = "Logs";
-            string logFileName = "mp3.log";
-            string logFilePath = Path.Combine(logFolderPath, logFileName);
-
-            // Create the directory if it doesn't exist
-            if (!Directory.Exists(logFolderPath))
-            {
-                Directory.CreateDirectory(logFolderPath);
-            }
-
-            if (!System.IO.File.Exists(logFilePath))
-            {
-                using (StreamWriter sw = System.IO.File.CreateText(logFilePath))
-                {
-                    foreach (var song in mp3Path)
-                    {
-                        sw.WriteLine($"Original MP3 Path: {song}");
-                    }
-
-                    foreach (var newSong in searchResult)
-                    {
-                        if (newSong == string.Empty)
-                        {
-                            sw.WriteLine($"No metadata found song");
-                        }
-                        if (newSong == "file does not exist")
-                        {
-                            sw.WriteLine($"{newSong}");
-                        }
-                        else
-                        {
-                            sw.WriteLine($"New song added with metadata: {newSong}");
-                            completedCounter++;
-                        }
-                    }
-                }
-            }
-            else
-            {
-                using (StreamWriter sw = System.IO.File.AppendText(logFilePath))
-                {
-                    foreach (var song in mp3Path)
-                    {
-                        sw.WriteLine($"Original MP3 Path: {song}");
-                    }
-
-                    foreach (var newSong in searchResult)
-                    {
-                        if (newSong == string.Empty)
-                        {
-                            sw.WriteLine($"No metadata found for: {newSong}");
-                        }
-                        if (newSong == "file does not exist")
-                        {
-                            sw.WriteLine($"Cannot find file source for: {newSong}");
-                        }
-                        else
-                        {
-                            sw.Write($"New song added with metadata: {newSong}");
-                            completedCounter++;
-                        }
-                    }
-                }
-            }
-            return completedCounter;
-        }
-
     }
 }

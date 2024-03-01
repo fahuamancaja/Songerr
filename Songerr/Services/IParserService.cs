@@ -6,7 +6,6 @@ namespace Songerr.Services
     {
         void ParseVideoUrl(SongModel playlistModel);
         string RemoveBracesAndTrailingSpaces(string input);
-        string RemoveSpecialCharacters(string str);
-        string MoveFileToCorrectLocation(SongModel playlistModel);
+        Task MoveFileToCorrectLocationAsync(SongModel playListModel);
     }
 }

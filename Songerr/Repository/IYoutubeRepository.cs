@@ -7,6 +7,5 @@ namespace Songerr.Repository
     {
         Task<List<string>> YoutubeSearchListGetIds(string searchString, long maxResults);
         Task<string> YoutubeSortByStatsReturnFirst(List<string> videoIdsList);
-        Task<(string Title, string Artist)> GetVideoInfo(string videoId);
     }
 }

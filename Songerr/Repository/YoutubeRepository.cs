@@ -43,24 +43,5 @@ namespace Songerr.Repository
             var sortedVideos = videoDetailsResponse.Items.OrderByDescending(item => item.Statistics.ViewCount ?? 0).ToList();
             return sortedVideos[0].Id;
         }
-        public async Task<(string Title, string Artist)> GetVideoInfo(string videoId)
-        {
-            var apiUrl = $"https://www.googleapis.com/youtube/v3/videos?part=snippet&id={videoId}&key={_youtubeService.ApiKey}";
-            using (var httpClient = new HttpClient())
-            {
-                var response = await httpClient.GetAsync(apiUrl);
-                var jsonResponse = await response.Content.ReadAsStringAsync();
-
-                JObject parsed = JObject.Parse(jsonResponse);
-                string title = parsed["items"][0]["snippet"]["title"].ToString();
-                string artist = parsed["items"][0]["snippet"]["channelTitle"].ToString();
-
-                artist = new string(artist.Where(c => !Path.GetInvalidPathChars().Contains(c)).ToArray());
-                artist = artist.Replace(' ', '_').Replace('.', '_').Replace('-', '_');
-
-                return (title, artist);
-            }
-        }
-        
     }
 }

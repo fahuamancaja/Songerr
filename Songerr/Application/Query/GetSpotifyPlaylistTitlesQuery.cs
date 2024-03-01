@@ -22,7 +22,7 @@ namespace Songerr.Application.Query
 
         public async Task<IEnumerable<string>> Handle(GetSpotifyPlaylistTitlesQuery request, CancellationToken cancellationToken)
         {
-            return await _spotifyService.GetSongTitlesAndArtistsAsync(request.PlaylistId);
+            return await _spotifyService.SpotiftyPlaylistInformation(request.PlaylistId);
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Songerr.Models;
 using Songerr.Repository;
 using System;
 using System.Collections.Generic;
@@ -31,49 +32,28 @@ namespace Songerr.Services
             _songerrService = songerrService;
             _musicSearchService = musicSearchService;
         }
-
-        public async Task<List<string>> GetPlaylistTitlesAsync(string playlistId)
+        public async Task<List<SongModel>> DownloadPlaylistSongs(string playlistId)
         {
-            var nextPageToken = "";
-            var titles = new List<string>();
-
-            var youtube = new YoutubeClient();
-            var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
-
-            await foreach (var video in youtube.Playlists.GetVideosAsync(playlistUrl))
-            {
-                var title = video.Title;
-                var author = video.Author;
-                var spTitles = $"{author} - {title}";
-                spTitles = _parserService.RemoveSpecialCharacters(spTitles);
-                titles.Add(spTitles);
-            }
-
-            return titles;
+            var playlistVideos = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
+            await DownloadMp3(playlistVideos);
+            await GetSongDataSpotify(playlistVideos);
+            return playlistVideos;
         }
-        public async Task<List<string>> DownloadPlaylistSongs(string playlistId)
+
+        private async Task DownloadMp3(List<SongModel> playlistVideos)
         {
-            var playlistVideo = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
-
-            var filePaths = new List<string>();
-            foreach (var video in playlistVideo)
+            foreach (var video in playlistVideos)
             {
-                var filePath = await _songerrService.DownloadFirstVideoAsMp3(video);
-                filePaths.Add(filePath);
+                await _songerrService.DownloadFirstVideoAsMp3(video);
             }
-
-            var response = await GetSongDataSpotify(filePaths);
-            return response;
         }
-        private async Task<List<string>> GetSongDataSpotify(List<string> filePaths)
+
+        private async Task GetSongDataSpotify(List<SongModel> songModels)
         {
-            var results = new List<string>();
-            foreach (var filePath in filePaths)
+            foreach (var songModel in songModels)
             {
-                var response = await _musicSearchService.SearchSpotifyStructure(filePath);
-                results.Add(response);
+                await _musicSearchService.SearchSpotifyMetaData(songModel);
             }
-            return results;
         }
     }
 }

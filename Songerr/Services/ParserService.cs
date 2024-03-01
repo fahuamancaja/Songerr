@@ -26,25 +26,28 @@ namespace Songerr.Services
 
             return result;
         }
-        public string RemoveSpecialCharacters(string str)
+        public async Task MoveFileToCorrectLocationAsync(SongModel songModel)
         {
-            return Regex.Replace(str, "[^a-zA-Z0-9 ]", "");
-        }
-        public string MoveFileToCorrectLocation(SongModel playListModel)
-        {
-            string titleName = RemoveBracesAndTrailingSpaces(Path.GetFileName(playListModel.Filepath));
-            string rootDirectoryPath = @"E:\Music";
+            //string titleName = RemoveBracesAndTrailingSpaces(Path.GetFileNameWithoutExtension(playListModel.Filepath));
+            string fileExtension = Path.GetExtension(songModel.Filepath);
+            string titlename = $"{songModel.Author} - {songModel.Title}";
+            //string rootDirectoryPath = @"E:\Music";
+            string rootDirectoryPath = @"E:\Test";
+            string albumArtistPath = $"{songModel.Author}\\{songModel.ALbum}";
 
-            string newFileName = Path.ChangeExtension(titleName, ".mp3");
-            string newFilePath = Path.Combine(rootDirectoryPath, newFileName);
+            string fullAlbumDirectory = Path.Combine(rootDirectoryPath, albumArtistPath);
+
+            string newFileName = Path.ChangeExtension(titlename, fileExtension);
+            string newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath));
 
             // Copy the file to the new location, overwriting if it already exists
-            File.Copy(playListModel.Filepath, newFilePath, true);
+            await Task.Run(() => File.Copy(songModel.Filepath, newFilePath, true));
 
             // Delete the original file
-            File.Delete(playListModel.Filepath);
+            await Task.Run(() => File.Delete(songModel.Filepath));
 
-            return newFilePath;
+            songModel.Filepath = newFilePath;
         }
     }
 }

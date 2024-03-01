@@ -2,8 +2,6 @@
 {
     using Songerr.Models;
     using Songerr.Repository;
-    using System.IO;
-    using System.Text.RegularExpressions;
     using System.Threading.Tasks;
     using YoutubeExplode.Playlists;
 
@@ -13,23 +11,24 @@
         private readonly IYoutubeDlRepository _youtubeDlRepository;
         private readonly IYoutubeRepository _youtubeRepository;
         private readonly IParserService _parserService;
+        private readonly IMusicSearchService _musicSearchService;
 
-        public SongerrService(SongerrSettings songerrSettings, IYoutubeDlRepository youtubeDlRepository, IYoutubeRepository youtubeRepository, IParserService parserService)
+        public SongerrService(SongerrSettings songerrSettings, IYoutubeDlRepository youtubeDlRepository, IYoutubeRepository youtubeRepository, IParserService parserService, IMusicSearchService musicSearchService)
         {
             _songerrSettings = songerrSettings;
             _youtubeDlRepository = youtubeDlRepository;
             _youtubeRepository = youtubeRepository;
             _parserService = parserService;
+            _musicSearchService = musicSearchService;
         }
 
-        public async ValueTask<string> DownloadFirstVideoAsMp3(SongModel playListVideo)
+        public async Task DownloadFirstVideoAsMp3(SongModel playListVideo)
         {
             try
             {
-                //var firstVideoId = await GetFirstVideoId(videoTitle);
-                //var videoInfo = await _youtubeRepository.GetVideoInfo(firstVideoId);
-                await _youtubeDlRepository.PlayListDownloadVideoAsMp3(playListVideo);
-                return _parserService.MoveFileToCorrectLocation(playListVideo);
+                await _youtubeDlRepository.DownloadVideoAsMp3(playListVideo);
+                await _parserService.MoveFileToCorrectLocationAsync(playListVideo);
+                await _musicSearchService.SearchSpotifyMetaData(playListVideo);
             }
             catch (Exception ex)
             {
@@ -37,16 +36,9 @@
                 throw;
             }
         }
-
-        private async Task<string> GetFirstVideoId(string videoTitle)
+        public async Task<SongModel> GetSingleMp3BasedOnUrl(string videoId)
         {
-            var videoIds = await _youtubeRepository.YoutubeSearchListGetIds(videoTitle, _songerrSettings.MaxResults);
-            return await _youtubeRepository.YoutubeSortByStatsReturnFirst(videoIds);
-        }
-
-        public async ValueTask<string> GetSingleMp3BasedOnUrl(string videoId)
-        {
-            var songModel = new SongModel() { Id = videoId};
+            var songModel = new SongModel() { Id = videoId };
             try
             {
                 _parserService.ParseVideoUrl(songModel);
@@ -56,9 +48,12 @@
                     throw new ArgumentNullException(nameof(songModel.Id), "Video ID or URL cannot be null.");
                 }
                 await _youtubeDlRepository.GetSongMetadataFromSongId(songModel);
+                await _musicSearchService.SearchSpotifyMetaData(songModel);
+
 
                 await _youtubeDlRepository.DownloadVideoAsMp3(songModel);
-                return _parserService.MoveFileToCorrectLocation(songModel);
+                await _parserService.MoveFileToCorrectLocationAsync(songModel);
+                return songModel;
             }
             catch (Exception ex)
             {

@@ -4,7 +4,7 @@ namespace Songerr.Services
 {
     public interface IMusicSearchService
     {
-        Task<string> GetSongInfoAsync();
-        Task<string> SearchSpotifyStructure(string fullPath);
+        //Task<string> GetSongInfoAsync();
+        Task SearchSpotifyMetaData(SongModel songModel);
     }
 }
