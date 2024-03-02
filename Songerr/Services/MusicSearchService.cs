@@ -69,66 +69,28 @@ namespace Songerr.Services
                     var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
                     var songTrack = spotifySong.tracks.items.FirstOrDefault();
 
-                    AddMetaData(songTrack, songModel);
+                    AddAlbumToModel(songTrack, songModel);
                     //MoveFileWithMetaData(songTrack, songModel);
             }
         }
 
-        private static void AddMetaData(Item metaData, SongModel songModel)
+        private static void AddAlbumToModel(Item metaData, SongModel songModel)
         {
             try
             {
-                // Load the file
-                //var file = TagLib.File.Create(songModel.Filepath);
-
-                //if (metaData != null)
-                //{
-                    //file.Tag.Album = metaData.album.name;
-                    //DateTime tempDate;
-                    //file.Tag.Year = DateTime.TryParse(metaData.album.release_date, out tempDate) ? (uint)tempDate.Year : 0;
-                    //file.Tag.Track = (uint)metaData.track_number;
-
-                    songModel.ALbum = metaData.album.name;
-                    
-                //    file.Save();
-                //}
+                songModel.ALbum = RemoveBracesAndTrailingSpaces(metaData.album.name);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
-        
-        private void MoveFileWithMetaData(Item metaData, SongModel songModel)
+        public static string RemoveBracesAndTrailingSpaces(string input)
         {
-            // Define the artist directory path
-            string artistDirectoryPath = Path.Combine(Path.GetDirectoryName(songModel.Filepath), songModel.Author);
+            string result = Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\s+$", "");
 
-            // Define the album directory path
-            string albumDirectoryPath = Path.Combine(artistDirectoryPath, metaData.album.name);
-
-            // Create artist directory if it doesn't exist
-            if (!Directory.Exists(artistDirectoryPath))
-            {
-                Directory.CreateDirectory(artistDirectoryPath);
-            }
-
-            // Create album directory if it doesn't exist
-            if (!Directory.Exists(albumDirectoryPath))
-            {
-                Directory.CreateDirectory(albumDirectoryPath);
-            }
-
-            // Move the song file to the album directory
-            var newFullFilePath = Path.Combine(albumDirectoryPath, Path.GetFileName(songModel.Filepath));
-            File.Move(songModel.Filepath, newFullFilePath);
-
-            // Rename the song file
-            string newFileName = Path.Combine(albumDirectoryPath, $"{metaData.artists[0].name} - {metaData.name}.mp3");
-            File.Move(newFullFilePath, newFileName);
-
-            songModel.Filepath = newFullFilePath;
+            return result;
         }
-            }
+    }
     
 }

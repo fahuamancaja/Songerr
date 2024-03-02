@@ -19,20 +19,14 @@ namespace Songerr.Services
                 playlistModel.Id = match.Groups[1].Value;
             }
         }
-        public string RemoveBracesAndTrailingSpaces(string input)
-        {
-            string result = Regex.Replace(input, "\\[[^\\]]*\\]", string.Empty);
-            result = result.Trim();
-
-            return result;
-        }
+        
         public async Task MoveFileToCorrectLocationAsync(SongModel songModel)
         {
             //string titleName = RemoveBracesAndTrailingSpaces(Path.GetFileNameWithoutExtension(playListModel.Filepath));
             string fileExtension = Path.GetExtension(songModel.Filepath);
             string titlename = $"{songModel.Author} - {songModel.Title}";
-            //string rootDirectoryPath = @"E:\Music";
-            string rootDirectoryPath = @"E:\Test";
+            string rootDirectoryPath = @"E:\Music";
+            //string rootDirectoryPath = @"E:\Test";
             string albumArtistPath = $"{songModel.Author}\\{songModel.ALbum}";
 
             string fullAlbumDirectory = Path.Combine(rootDirectoryPath, albumArtistPath);
@@ -48,6 +42,21 @@ namespace Songerr.Services
             await Task.Run(() => File.Delete(songModel.Filepath));
 
             songModel.Filepath = newFilePath;
+        }
+
+        public async Task AddMetaDataToFile(SongModel songModel)
+        {
+           var file = TagLib.File.Create(songModel.Filepath);
+
+            if (!string.IsNullOrWhiteSpace(songModel.Id))
+            {
+                file.Tag.Title = songModel.Title;
+                file.Tag.Performers = new string[] { songModel.Author };
+                file.Tag.Album = songModel.ALbum;
+                //file.Tag.Track = 1; // Track number
+
+                file.Save();
+            }
         }
     }
 }

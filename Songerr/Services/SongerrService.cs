@@ -50,9 +50,10 @@
                 await _youtubeDlRepository.GetSongMetadataFromSongId(songModel);
                 await _musicSearchService.SearchSpotifyMetaData(songModel);
 
-
                 await _youtubeDlRepository.DownloadVideoAsMp3(songModel);
                 await _parserService.MoveFileToCorrectLocationAsync(songModel);
+                await _parserService.AddMetaDataToFile(songModel);
+
                 return songModel;
             }
             catch (Exception ex)

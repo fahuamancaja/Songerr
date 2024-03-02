@@ -31,17 +31,12 @@ namespace Songerr.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] SongInput input)
+        public async Task<IActionResult> Post([FromBody] SongInput payload)
         {
-            var mp3PathResults = new List<SongModel>();
-            foreach (var url in input.Titles)
-            {
-                var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Url = url });
 
-                mp3PathResults.Add(mp3Path);
-            }
-
-            var response = $"Completed {mp3PathResults.Count}";
+            var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Url = payload.Url });
+            var response = $"Completed {mp3Path.Title}";
+            
             return Ok(response);
         }
 
@@ -50,15 +45,15 @@ namespace Songerr.Controllers
         {
             var request = new DownloadPlaylistSongsCommand { PlaylistId = playlistId };
             var response = await _mediator.Send(request);
-            return Ok(response);
+            return Ok($"Completed: {response.Count}");
         }
 
-        [HttpGet("GetSpotifyPlaylistTitles")]
-        public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
-        {
-            var request = new GetSpotifyPlaylistTitlesQuery { PlaylistId = playlistId };
-            var response = await _mediator.Send(request);
-            return Ok(response);
-        }
+        //[HttpGet("GetSpotifyPlaylistTitles")]
+        //public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
+        //{
+        //    var request = new GetSpotifyPlaylistTitlesQuery { PlaylistId = playlistId };
+        //    var response = await _mediator.Send(request);
+        //    return Ok(response);
+        //}
     }
 }

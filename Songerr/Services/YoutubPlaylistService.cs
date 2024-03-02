@@ -34,10 +34,31 @@ namespace Songerr.Services
         }
         public async Task<List<SongModel>> DownloadPlaylistSongs(string playlistId)
         {
-            var playlistVideos = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
-            await DownloadMp3(playlistVideos);
-            await GetSongDataSpotify(playlistVideos);
-            return playlistVideos;
+
+            var songModels = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
+            await DownloadMp3(songModels);
+            await GetSongDataSpotify(songModels);
+            return songModels;
+        }
+
+        public async Task<List<SongModel>> DownloadPlaylistSongsRevised(string playlistId)
+        {
+            var songModels = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
+
+            foreach (var songModel in songModels)
+            {
+                if (songModel.Id == null)
+                {
+                    throw new ArgumentNullException(nameof(songModel.Id), "Video ID or URL cannot be null.");
+                }
+                //await _youtubeDlRepository.GetSongMetadataFromSongId(songModel);
+                await _musicSearchService.SearchSpotifyMetaData(songModel);
+
+                await _youtubeDlRepository.DownloadVideoAsMp3(songModel);
+                await _parserService.MoveFileToCorrectLocationAsync(songModel);
+                await _parserService.AddMetaDataToFile(songModel);
+            }
+            return songModels;
         }
 
         private async Task DownloadMp3(List<SongModel> playlistVideos)

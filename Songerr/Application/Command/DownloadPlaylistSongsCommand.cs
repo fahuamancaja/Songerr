@@ -23,7 +23,7 @@ namespace Songerr.Application.Command
 
         public async Task<List<SongModel>> Handle(DownloadPlaylistSongsCommand request, CancellationToken cancellationToken)
         {
-            return await _playlistRetrieverService.DownloadPlaylistSongs(request.PlaylistId);
+            return await _playlistRetrieverService.DownloadPlaylistSongsRevised(request.PlaylistId);
         }
     }
 
