@@ -68,9 +68,11 @@ namespace Songerr.Services
                 {
                     var spotifySong = JsonConvert.DeserializeObject<SpotifyResults>(response.Content);
                     var songTrack = spotifySong.tracks.items.FirstOrDefault();
-
-                    AddAlbumToModel(songTrack, songModel);
-                    //MoveFileWithMetaData(songTrack, songModel);
+                    if (songTrack != null)
+                    {
+                        AddAlbumToModel(songTrack, songModel);
+                    }
+                //MoveFileWithMetaData(songTrack, songModel);
             }
         }
 
@@ -78,16 +80,23 @@ namespace Songerr.Services
         {
             try
             {
-                songModel.ALbum = RemoveBracesAndTrailingSpaces(metaData.album.name);
+                songModel.ALbum = RemoveBracesAndTrailingSpacesAndSpecialChars(metaData.album.name);
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error: {ex.Message}");
             }
         }
-        public static string RemoveBracesAndTrailingSpaces(string input)
+        public static string RemoveBracesAndTrailingSpacesAndSpecialChars(string input)
         {
-            string result = Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\s+$", "");
+            // First, remove parentheses, square brackets, and curly braces along with their content
+            string result = Regex.Replace(Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\[[^\]]*\]", ""), @"\{[^}]*\}", "");
+
+            // Then, remove any special characters except spaces, underscores, and hyphens
+            result = Regex.Replace(result, @"[^0-9A-Za-z _-]", "");
+
+            // Finally, remove trailing spaces
+            result = Regex.Replace(result, @"\s+$", "");
 
             return result;
         }
