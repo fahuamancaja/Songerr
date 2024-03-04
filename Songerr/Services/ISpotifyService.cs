@@ -2,6 +2,6 @@
 {
     public interface ISpotifyService
     {
-        Task<List<string>> GetSongTitlesAndArtistsAsync(string playlistId);
+        Task<List<string>> SpotiftyPlaylistInformation(string playlistId);
     }
 }

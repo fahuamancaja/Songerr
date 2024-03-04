@@ -1,6 +1,8 @@
 ﻿using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using Songerr.Models;
+using Songerr.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,36 +16,65 @@ namespace Songerr.Services
     public class YoutubPlaylistService : IPlaylistRetriever
     {
         private readonly YouTubeService _youtubeService;
+        private readonly IYoutubeRepository _youtubeRepository;
+        private readonly IYoutubeDlRepository _youtubeDlRepository;
+        private readonly IParserService _parserService;
+        private readonly ISongerrService _songerrService;
+        private readonly IMusicSearchService _musicSearchService;
 
-        public YoutubPlaylistService(string apiKey)
+        public YoutubPlaylistService(string apiKey, IYoutubeRepository youtubeRepository,IYoutubeDlRepository youtubeDlRepository, IParserService parserService, ISongerrService songerrService, IMusicSearchService musicSearchService)
         {
             _youtubeService = new YouTubeService(new BaseClientService.Initializer() { 
              ApiKey = apiKey });
+            _youtubeRepository = youtubeRepository;
+            _youtubeDlRepository = youtubeDlRepository;
+            _parserService = parserService;
+            _songerrService = songerrService;
+            _musicSearchService = musicSearchService;
+        }
+        public async Task<List<SongModel>> DownloadPlaylistSongs(string playlistId)
+        {
+
+            var songModels = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
+            await DownloadMp3(songModels);
+            await GetSongDataSpotify(songModels);
+            return songModels;
         }
 
-        public async Task<List<string>> GetPlaylistTitlesAsync(string playlistId)
+        public async Task<List<SongModel>> DownloadPlaylistSongsRevised(string playlistId)
         {
-            var nextPageToken = "";
-            var titles = new List<string>();
+            var songModels = await _youtubeDlRepository.GetSongsMetadataFromPlaylistId(playlistId);
 
-            var youtube = new YoutubeClient();
-            var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
-
-            await foreach (var video in youtube.Playlists.GetVideosAsync(playlistUrl))
+            foreach (var songModel in songModels)
             {
-                var title = video.Title;
-                var author = video.Author;
-                var spTitles = $"{author} - {title}";
-                spTitles = RemoveSpecialCharacters(spTitles);
-                titles.Add(spTitles);
+                if (songModel.Id == null)
+                {
+                    throw new ArgumentNullException(nameof(songModel.Id), "Video ID or URL cannot be null.");
+                }
+                //await _youtubeDlRepository.GetSongMetadataFromSongId(songModel);
+                await _musicSearchService.SearchSpotifyMetaData(songModel);
+
+                await _youtubeDlRepository.DownloadVideoAsMp3(songModel);
+                await _parserService.MoveFileToCorrectLocationAsync(songModel);
+                await _parserService.AddMetaDataToFile(songModel);
             }
-
-            return titles;
+            return songModels;
         }
-        private static string RemoveSpecialCharacters(string str)
+
+        private async Task DownloadMp3(List<SongModel> playlistVideos)
         {
-            return Regex.Replace(str, "[^a-zA-Z0-9 ]", "");
+            foreach (var video in playlistVideos)
+            {
+                await _songerrService.DownloadFirstVideoAsMp3(video);
+            }
         }
 
+        private async Task GetSongDataSpotify(List<SongModel> songModels)
+        {
+            foreach (var songModel in songModels)
+            {
+                await _musicSearchService.SearchSpotifyMetaData(songModel);
+            }
+        }
     }
 }

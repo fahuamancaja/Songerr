@@ -1,12 +1,13 @@
-﻿using Google.Apis.YouTube.v3;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Songerr.Application.Command;
 using Songerr.Application.Query;
 using Songerr.Models;
 using Songerr.Services;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.IO;
+
 
 namespace Songerr.Controllers
 {
@@ -30,69 +31,29 @@ namespace Songerr.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] SongInput input)
+        public async Task<IActionResult> Post([FromBody] SongInput payload)
         {
-            var mp3PathResults = new List<string>();
-            var searchResults = new List<string>();
-            foreach (var title in input.Titles)
-            {
-                var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Title = title });
-                var searchResult = await _mediator.Send(new SearchSpotifyStructureCommand { Mp3Path = mp3Path });
 
-                mp3PathResults.Add(mp3Path);
-                searchResults.Add(searchResult);
-            }
-
-            var calculatedComplete = CalculateCompletionRate(searchResults);
-            CheckAndCreateLogFile(mp3PathResults.ToString(), calculatedComplete);
-            return Ok(calculatedComplete);
-        }
-
-        [HttpGet("GetYouTubeMusicPlaylistTitles")]
-        public async Task<IActionResult> GetYouTubeMusicPlaylistTitles(string playlistId)
-        {
-            var request = new GetYouTubeMusicPlaylistTitlesQuery { PlaylistId = playlistId };
-            var response = await _mediator.Send(request);
+            var mp3Path = await _mediator.Send(new DownloadVideoAsMp3Command { Url = payload.Url });
+            var response = $"Completed {mp3Path.Title}";
+            
             return Ok(response);
         }
 
-        [HttpGet("GetSpotifyPlaylistTitles")]
-        public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
+        [HttpGet("DownloadPlaylistSongs")]
+        public async Task<IActionResult> DownloadPlaylistSongs(string playlistId)
         {
-            var request = new GetSpotifyPlaylistTitlesQuery { PlaylistId = playlistId };
+            var request = new DownloadPlaylistSongsCommand { PlaylistId = playlistId };
             var response = await _mediator.Send(request);
-            return Ok(response);
+            return Ok($"Completed: {response.Count}");
         }
 
-        private static string CalculateCompletionRate(List<string> list)
-        {
-            int totalCount = list.Count;
-            int completeCount = list.Count(x => x.ToLower() == "complete"); // Assuming a non-empty string is considered complete
-            double completionRate = (double)completeCount / totalCount;
-            return $"{completeCount}/{totalCount} completed";
-        }
-
-        private void CheckAndCreateLogFile(string mp3Path, string searchResult)
-        {
-            string logFilePath = "mp3.log";
-            if (!System.IO.File.Exists(logFilePath))
-            {
-                using (StreamWriter sw = System.IO.File.CreateText(logFilePath))
-                {
-                    sw.WriteLine($"MP3 Path: {mp3Path}");
-                    sw.WriteLine($"Search Result: {searchResult}");
-                }
-            }
-            else
-            {
-                using (StreamWriter sw = System.IO.File.AppendText(logFilePath))
-                {
-                    sw.WriteLine($"MP3 Path: {mp3Path}");
-                    sw.WriteLine($"Search Result: {searchResult}");
-                }
-            }
-        }
-
+        //[HttpGet("GetSpotifyPlaylistTitles")]
+        //public async Task<IActionResult> GetSpotifyPlaylistTitles(string playlistId)
+        //{
+        //    var request = new GetSpotifyPlaylistTitlesQuery { PlaylistId = playlistId };
+        //    var response = await _mediator.Send(request);
+        //    return Ok(response);
+        //}
     }
-
 }

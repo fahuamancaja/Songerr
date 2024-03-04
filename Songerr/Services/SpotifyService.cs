@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Auth.OAuth2;
 using Newtonsoft.Json;
 using RestSharp;
+using Songerr.Models;
 using SpotifyAPI.Web;
 using System;
 using System.Collections.Generic;
@@ -9,18 +10,18 @@ using System.Threading.Tasks;
 
 namespace Songerr.Services
 {
-    public class SpotifyPlaylistService : ISpotifyService
+    public class SpotifyService : ISpotifyService
     {
         private readonly string _clientId;
         private readonly string _clientSecret;
 
-        public SpotifyPlaylistService(string clientId, string clientSecret)
+        public SpotifyService(string clientId, string clientSecret)
         {
             _clientId = clientId;
             _clientSecret = clientSecret;
         }
 
-        public async Task<List<string>> GetSongTitlesAndArtistsAsync(string playlistId)
+        public async Task<List<string>> SpotiftyPlaylistInformation(string playlistId)
         {
             var accessToken = await GetSpotifyAccessTokenAsync();
 
@@ -63,5 +64,4 @@ namespace Songerr.Services
             return null;
         }
     }
-
 }

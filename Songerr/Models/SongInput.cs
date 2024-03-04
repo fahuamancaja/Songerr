@@ -2,6 +2,6 @@
 {
     public class SongInput
     {
-        public List<string> Titles { get; set; }
+        public string Url { get; set; }
     }
 }

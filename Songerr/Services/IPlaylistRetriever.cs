@@ -1,7 +1,10 @@
-﻿namespace Songerr.Services
+﻿using Songerr.Models;
+
+namespace Songerr.Services
 {
     public interface IPlaylistRetriever
     {
-        Task<List<string>> GetPlaylistTitlesAsync(string playlistId);
+        Task<List<SongModel>> DownloadPlaylistSongs(string playlistId);
+        Task<List<SongModel>> DownloadPlaylistSongsRevised(string playlistId);
     }
 }
