@@ -20,27 +20,20 @@ public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMus
         
         var spotifySong = await spotifyClientSearch.GetSpotifyMetaData(songModel, accessToken);
 
-        if (spotifySong?.tracks?.items != null)
-            AddAlbumToModel(spotifySong?.tracks?.items.FirstOrDefault()!, songModel);
-    }
-    
-    private static void AddAlbumToModel(Item? metaData, SongModel? songModel)
-    {
-        try
+        var firstItem = spotifySong?.tracks?.items?.FirstOrDefault();
+        if (firstItem != null)
         {
-            if (songModel != null) songModel.Album = RemoveBracesAndTrailingSpacesAndSpecialChars(metaData?.album?.name);
-        }
-        catch (Exception ex)
-        {
-            Log.Error($"Error: {ex.Message}");
+            songModel!.Album = CleanAlbumName(firstItem.album?.name);
         }
     }
 
-    private static string? RemoveBracesAndTrailingSpacesAndSpecialChars(string? input)
+    private static string? CleanAlbumName(string? input)
     {
-        // First, remove parentheses, square brackets, and curly braces along with their content
-        if (input != null)
+        try
         {
+            if (string.IsNullOrEmpty(input)) return input;
+            // First, remove parentheses, square brackets, and curly braces along with their content
+
             var result = Regex.Replace(Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\[[^\]]*\]", ""),
                 @"\{[^}]*\}", "");
 
@@ -52,7 +45,10 @@ public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMus
 
             return result;
         }
-
-        return input;
+        catch (Exception ex)
+        {
+            Log.Error($"Error cleaning album name: {ex.Message}");
+            return null;
+        }
     }
 }

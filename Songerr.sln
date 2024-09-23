@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Songerr.Domain", "Songerr.D
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Songerr.Infrastructure", "Songerr.Infrastructure\Songerr.Infrastructure.csproj", "{897C86C2-2140-4C43-8C51-E34EFDFF762C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Songerr.Tests", "Songerr.Tests\Songerr.Tests.csproj", "{C9DA5346-7A28-47E6-91B8-6BF408942ADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{897C86C2-2140-4C43-8C51-E34EFDFF762C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{897C86C2-2140-4C43-8C51-E34EFDFF762C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{897C86C2-2140-4C43-8C51-E34EFDFF762C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9DA5346-7A28-47E6-91B8-6BF408942ADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9DA5346-7A28-47E6-91B8-6BF408942ADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9DA5346-7A28-47E6-91B8-6BF408942ADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9DA5346-7A28-47E6-91B8-6BF408942ADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
