@@ -18,11 +18,11 @@ public class SongerrController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> Post([FromBody] SongInput payload)
+    public async Task<IActionResult> Post([FromBody] SongInput songInput)
     {
-        Log.Information($"Received request to convert video URL: {payload.Url}");
+        Log.Information($"Received request to convert video URL: {songInput.Url}");
 
-        var songModel = await _mediator.Send(new DownloadVideoAsMp3Command { Url = payload.Url }).ConfigureAwait(false);
+        var songModel = await _mediator.Send(new DownloadVideoAsMp3Command { Url = songInput.Url }).ConfigureAwait(false);
         Log.Information($"Successfully converted video URL. MP3 file path: {songModel.FilePath}");
         
         return Ok($"Completed {songModel.Title}");
@@ -31,7 +31,9 @@ public class SongerrController : ControllerBase
     [HttpGet("DownloadPlaylistSongs")]
     public async Task<IActionResult> DownloadPlaylistSongs(string playlistId)
     {
-        var response = await _mediator.Send(new DownloadPlaylistSongsCommand { PlaylistId = playlistId }).ConfigureAwait(false);
-        return Ok($"Completed: {response.Count}");
+        Log.Information($"Received request to convert Playlist Id: {playlistId}");
+        
+        return Ok($"Completed:{(await _mediator.Send(new DownloadPlaylistSongsCommand { PlaylistId = playlistId })
+            .ConfigureAwait(false)).Count}");
     }
 }

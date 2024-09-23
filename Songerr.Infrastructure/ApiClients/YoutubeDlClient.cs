@@ -18,7 +18,7 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
     private readonly LocalSettings _settings = settings.Value;
 
     
-    public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string playlistId)
+    public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string? playlistId)
     {
         var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
         return await youtubeClient.Playlists.GetVideosAsync(playlistUrl);
@@ -28,15 +28,15 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
     {
         try
         {
-            string? url = $"https://music.youtube.com/watch?v={songModel?.Id}";
-            Log.Information(_settings.OperatingSystem);
+            var url = $"https://music.youtube.com/watch?v={songModel?.Id}";
+            Log.Information(_settings.OperatingSystem!);
 
             var ytdl = _settings.OperatingSystem == "Linux" ? 
                 new YoutubeDL { YoutubeDLPath = _settings.YoutubeDLPath, FFmpegPath = _settings.FFmpegPath } : 
                 youtubeDl;
 
             var result = await ytdl.RunAudioDownload(url, AudioConversionFormat.Opus).ConfigureAwait(false);
-            string res = result.Data;
+            var res = result.Data;
         
             Log.Information($"Downloaded opus audio file {res}");
             return res;
@@ -49,7 +49,7 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
         }
     }
 
-    public async Task<Video> GetSongMetadata(SongModel? songModel)
+    public async Task<Video?> GetSongMetadata(SongModel? songModel)
     {
         try
         {

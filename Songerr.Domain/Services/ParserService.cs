@@ -17,21 +17,24 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
         var titlename = $"{songModel.Author} - {songModel.Title}";
         var rootDirectoryPath = _settings.DownloadPath;
 
-        var albumArtistPath = Path.Combine(songModel.Author, songModel.Album);
+        if (songModel.Author != null)
+        {
+            var albumArtistPath = Path.Combine(songModel.Author, songModel.Album!);
 
-        var fullAlbumDirectory = Path.Combine(rootDirectoryPath, albumArtistPath);
+            var fullAlbumDirectory = Path.Combine(rootDirectoryPath!, albumArtistPath);
 
-        var newFileName = Path.ChangeExtension(titlename, fileExtension);
-        var newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
-        Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
+            var newFileName = Path.ChangeExtension(titlename, fileExtension);
+            var newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
 
-        // Copy the file to the new location, overwriting if it already exists
-        await Task.Run(() => File.Copy(songModel.FilePath, newFilePath, true));
+            // Copy the file to the new location, overwriting if it already exists
+            await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
 
-        // Delete the original file
-        await Task.Run(() => File.Delete(songModel.FilePath));
+            // Delete the original file
+            await Task.Run(() => File.Delete(songModel.FilePath!));
 
-        songModel.FilePath = newFilePath;
+            songModel.FilePath = newFilePath;
+        }
     }
 
     public void ParseVideoUrl(SongModel? songmodel)
@@ -47,7 +50,7 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
         if (match.Success) songmodel!.Id = match.Groups[1].Value;
     }
 
-    public async Task AddMetaDataToFile(SongModel? songModel)
+    public Task AddMetaDataToFile(SongModel? songModel)
     {
         var file = TagLib.File.Create(songModel!.FilePath);
 
@@ -61,5 +64,7 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
 
             Log.Information($"Metadata Added to Song Id:{songModel.Id} Song Title:{songModel.Title}");
         }
+
+        return Task.CompletedTask;
     }
 }

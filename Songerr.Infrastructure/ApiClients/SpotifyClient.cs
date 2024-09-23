@@ -19,7 +19,7 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
 {
     private readonly SpotifySettings _settings = settings.Value;
     
-    public async Task<string> GetSpotifyAccessTokenAsync()
+    public async Task<string?> GetSpotifyAccessTokenAsync()
     {
         var client = new RestClient("https://accounts.spotify.com/api/token");
         var request = new RestRequest();
@@ -30,20 +30,18 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
 
         var response = await client.PostAsync(request);
 
-        if (response.StatusCode == HttpStatusCode.OK)
-        {
-            var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
-            return jsonResponse?.access_token;
-        }
+        if (response.StatusCode != HttpStatusCode.OK) return null;
+        if (response.Content == null) return null;
+        var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+        return jsonResponse?.access_token;
 
-        return null;
     }
 
     public async Task<SpotifyResults?> GetSpotifyMetaData(SongModel? songModel, string accessToken)
     {
         var url = "https://api.spotify.com/v1/search";
         var request = new FlurlRequest(url)
-            .SetQueryParam("q", $"artist:{songModel.Author} track:{songModel.Title}")
+            .SetQueryParam("q", $"artist:{songModel?.Author} track:{songModel?.Title}")
             .SetQueryParam("type", "track")
             .WithHeader("Authorization", $"Bearer {accessToken}");
 

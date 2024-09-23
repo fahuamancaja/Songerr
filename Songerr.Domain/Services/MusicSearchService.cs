@@ -19,15 +19,16 @@ public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMus
         var accessToken = await spotifyClientSearch.GetSpotifyAccessTokenAsync() ?? throw new Exception("Failed to retrieve access token.");
         
         var spotifySong = await spotifyClientSearch.GetSpotifyMetaData(songModel, accessToken);
-        
-        AddAlbumToModel(spotifySong?.tracks.items.FirstOrDefault()!, songModel);
+
+        if (spotifySong?.tracks?.items != null)
+            AddAlbumToModel(spotifySong?.tracks?.items.FirstOrDefault()!, songModel);
     }
     
-    private static void AddAlbumToModel(Item metaData, SongModel? songModel)
+    private static void AddAlbumToModel(Item? metaData, SongModel? songModel)
     {
         try
         {
-            songModel.Album = RemoveBracesAndTrailingSpacesAndSpecialChars(metaData.album.name);
+            if (songModel != null) songModel.Album = RemoveBracesAndTrailingSpacesAndSpecialChars(metaData?.album?.name);
         }
         catch (Exception ex)
         {
@@ -35,18 +36,23 @@ public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMus
         }
     }
 
-    private static string RemoveBracesAndTrailingSpacesAndSpecialChars(string input)
+    private static string? RemoveBracesAndTrailingSpacesAndSpecialChars(string? input)
     {
         // First, remove parentheses, square brackets, and curly braces along with their content
-        var result = Regex.Replace(Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\[[^\]]*\]", ""),
-            @"\{[^}]*\}", "");
+        if (input != null)
+        {
+            var result = Regex.Replace(Regex.Replace(Regex.Replace(input, @"\([^)]*\)", ""), @"\[[^\]]*\]", ""),
+                @"\{[^}]*\}", "");
 
-        // Then, remove any special characters except spaces, underscores, and hyphens
-        result = Regex.Replace(result, @"[^0-9A-Za-z _-]", "");
+            // Then, remove any special characters except spaces, underscores, and hyphens
+            result = Regex.Replace(result, @"[^0-9A-Za-z _-]", "");
 
-        // Finally, remove trailing spaces
-        result = Regex.Replace(result, @"\s+$", "");
+            // Finally, remove trailing spaces
+            result = Regex.Replace(result, @"\s+$", "");
 
-        return result;
+            return result;
+        }
+
+        return input;
     }
 }

@@ -39,3 +39,4 @@ Songerr.Application/appsettings.json
 /Songerr.Application/Logs
 Songerr.Application/Controllers/WeatherForecastController.cs
 Songerr.Application/WeatherForecast.cs
+/.idea

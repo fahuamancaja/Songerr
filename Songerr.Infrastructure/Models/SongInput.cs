@@ -2,5 +2,5 @@
 
 public class SongInput
 {
-    public string Url { get; set; }
+    public string? Url { get; set; }
 }

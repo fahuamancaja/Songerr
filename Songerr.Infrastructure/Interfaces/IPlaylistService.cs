@@ -4,5 +4,5 @@ namespace Songerr.Infrastructure.Interfaces;
 
 public interface IPlaylistService
 {
-    Task<List<SongModel>?> DownloadPlaylistAudioFiles(string playlistId);
+    Task<List<SongModel>?> DownloadPlaylistAudioFiles(string? playlistId);
 }

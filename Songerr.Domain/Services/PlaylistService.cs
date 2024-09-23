@@ -7,7 +7,7 @@ namespace Songerr.Domain.Services;
 
 public class PlaylistService(IMapper mapper, IYoutubeDlClient youtubeDlClient, ISongerrService songerrService) : IPlaylistService
 {
-    public async Task<List<SongModel>?> DownloadPlaylistAudioFiles(string playlistId)
+    public async Task<List<SongModel>?> DownloadPlaylistAudioFiles(string? playlistId)
     {
         var playListModels = await youtubeDlClient.GetPlaylistMetadata(playlistId);
 

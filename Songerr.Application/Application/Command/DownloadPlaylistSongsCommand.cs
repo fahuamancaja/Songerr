@@ -7,7 +7,7 @@ namespace Songerr.Application.Application.Command;
 // Define the query
 public class DownloadPlaylistSongsCommand : IRequest<List<SongModel>>
 {
-    public string PlaylistId { get; set; }
+    public string? PlaylistId { get; set; }
 }
 
 // Define the handler
@@ -20,8 +20,8 @@ public class DownloadPlaylistSongsHandler : IRequestHandler<DownloadPlaylistSong
         _playlistServiceService = playlistServiceService;
     }
 
-    public async Task<List<SongModel>?> Handle(DownloadPlaylistSongsCommand request, CancellationToken cancellationToken)
+    public async Task<List<SongModel>> Handle(DownloadPlaylistSongsCommand request, CancellationToken cancellationToken)
     {
-        return await _playlistServiceService.DownloadPlaylistAudioFiles(request.PlaylistId);
+        return (await _playlistServiceService.DownloadPlaylistAudioFiles(request.PlaylistId))!;
     }
 }

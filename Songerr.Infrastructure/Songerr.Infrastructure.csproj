@@ -20,7 +20,6 @@
         <PackageReference Include="SpotifyAPI.Web" Version="7.1.1" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
         <PackageReference Include="TagLibSharp" Version="2.3.0" />
-        <PackageReference Include="YoutubeDLSharp" Version="1.1.1" />
         <PackageReference Include="YoutubeExplode" Version="6.4.0" />
         <!-- Add other package references here if needed -->
     </ItemGroup>
