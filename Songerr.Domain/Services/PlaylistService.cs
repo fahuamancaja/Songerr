@@ -17,7 +17,7 @@ public class PlaylistService(IMapper mapper, IYoutubeDlClient youtubeDlClient, I
 
         var songModels = playListModels
             .Select(mapper.Map<SongModel>)
-            .Where(mappedResult => mappedResult != null)   // Filter out nulls after mapping
+            .Where(mappedResult => mappedResult != null) // Filter out nulls after mapping
             .ToList();
 
         if (songModels.Count == 0) return [];

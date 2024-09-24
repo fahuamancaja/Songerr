@@ -24,11 +24,9 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Elastic.Ingest.Elasticsearch" Version="0.7.1"/>
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1"/>
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0"/>
         <PackageReference Include="Serilog.Sinks.Syslog" Version="0.2.0"/>
-        <PackageReference Include="SyslogNet.Client" Version="0.3.3"/>
         <PackageReference Include="Unidecode.NET" Version="2.1.0"/>
     </ItemGroup>
 

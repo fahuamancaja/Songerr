@@ -1,8 +1,6 @@
-using System.Net;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using RestSharp;
 using Serilog;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.Models;
@@ -17,25 +15,23 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
 
     public async Task<string?> GetSpotifyAccessTokenAsync()
     {
-        var client = new RestClient("https://accounts.spotify.com/api/token");
-        var request = new RestRequest();
-        request.AddHeader("Content-Type", "application/x-www-form-urlencoded");
-        request.AddParameter("grant_type", "client_credentials");
-        request.AddParameter("client_id", _settings.ClientId);
-        request.AddParameter("client_secret", _settings.ClientSecret);
+        var response = await "https://accounts.spotify.com/api/token"
+            .WithHeader("Content-Type", "application/x-www-form-urlencoded")
+            .PostUrlEncodedAsync(new
+            {
+                grant_type = "client_credentials",
+                client_id = _settings.ClientId,
+                client_secret = _settings.ClientSecret
+            });
 
-        var response = await client.PostAsync(request);
-
-        if (response.StatusCode != HttpStatusCode.OK) return null;
-        if (response.Content == null) return null;
-        var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
+        if (!response.ResponseMessage.IsSuccessStatusCode) return null;
+        var jsonResponse = JsonConvert.DeserializeObject<dynamic>(await response.GetStringAsync());
         return jsonResponse?.access_token;
     }
 
     public async Task<SpotifyResults?> GetSpotifyMetaData(SongModel? songModel, string accessToken)
     {
-        var url = "https://api.spotify.com/v1/search";
-        var request = new FlurlRequest(url)
+        var request = new FlurlRequest("https://api.spotify.com/v1/search")
             .SetQueryParam("q", $"artist:{songModel?.Author} track:{songModel?.Title}")
             .SetQueryParam("type", "track")
             .WithHeader("Authorization", $"Bearer {accessToken}");

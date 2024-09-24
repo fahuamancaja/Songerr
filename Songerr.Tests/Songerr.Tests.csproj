@@ -35,9 +35,9 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="Samples\Recording.m4a">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </EmbeddedResource>
+        <EmbeddedResource Include="Samples\Recording.m4a">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </EmbeddedResource>
     </ItemGroup>
 
 </Project>

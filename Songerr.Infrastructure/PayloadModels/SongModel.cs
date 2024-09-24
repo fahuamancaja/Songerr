@@ -1,6 +1,6 @@
 ﻿namespace Songerr.Infrastructure.PayloadModels;
 
-public class SongModel : IFileModel
+public class SongModel
 {
     public string? PlaylistId { get; set; }
     public string? Id { get; set; }
