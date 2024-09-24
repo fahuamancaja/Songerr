@@ -11,7 +11,7 @@ public class YoutubeDlService(IMapper mapper, IYoutubeDlClient youtubeDlClient) 
         songModel!.FilePath = await youtubeDlClient.DownloadAudioFile(songModel);
     }
 
-    public async Task GetSongMetadataFromSongId(SongModel? songModel)
+    public async Task GetSongMetadata(SongModel? songModel)
     {
         var result = await youtubeDlClient.GetSongMetadata(songModel);
 

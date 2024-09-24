@@ -5,12 +5,6 @@ using Songerr.Tests.Customizations;
 
 namespace Songerr.Tests.AutoDataAttributes;
 
-public class CustomAutoDataAttribute : AutoDataAttribute
-{
-    public CustomAutoDataAttribute()
-        : base(() => new Fixture()
-            .Customize(new AutoMoqCustomization())
-            .Customize(new FixedFilePathCustomization()))
-    {
-    }
-}
+public class CustomAutoDataAttribute() : AutoDataAttribute(() => new Fixture()
+    .Customize(new AutoMoqCustomization())
+    .Customize(new FixedFilePathCustomization()));

@@ -5,5 +5,5 @@ namespace Songerr.Infrastructure.Interfaces;
 public interface IYoutubeDlService
 {
     Task DownloadAudioFile(SongModel? songModel);
-    Task GetSongMetadataFromSongId(SongModel? songModel);
+    Task GetSongMetadata(SongModel? songModel);
 }

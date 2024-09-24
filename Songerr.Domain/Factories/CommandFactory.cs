@@ -21,7 +21,7 @@ public class GetSongMetadataCommand(IYoutubeDlService youtubeDlService) : ISongP
 {
     public Task ExecuteAsync(SongModel songModel)
     {
-        return youtubeDlService.GetSongMetadataFromSongId(songModel);
+        return youtubeDlService.GetSongMetadata(songModel);
     }
 }
 
@@ -29,7 +29,7 @@ public class SearchSpotifyMetadataCommand(IMusicSearchService searchService) : I
 {
     public Task ExecuteAsync(SongModel songModel)
     {
-        return searchService.SearchSpotifyMetaData(songModel);
+        return searchService.SearchSpotifyMetadata(songModel);
     }
 }
 
@@ -45,7 +45,7 @@ public class MoveFileToCorrectLocationCommand(IParserService parserService) : IS
 {
     public Task ExecuteAsync(SongModel songModel)
     {
-        return parserService.MoveFileToCorrectLocationAsync(songModel);
+        return parserService.MoveFileToCorrectLocation(songModel);
     }
 }
 

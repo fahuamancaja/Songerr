@@ -37,7 +37,7 @@ public class ParserServiceTests
         Directory.CreateDirectory(Path.Combine("C:\\MusicDownloads", songModel.Author, songModel.Album));
 
         // Act
-        await _parserService.MoveFileToCorrectLocationAsync(songModel);
+        await _parserService.MoveFileToCorrectLocation(songModel);
 
         // Assert
         var newFileName = $"{songModel.Author} - {songModel.Title}{Path.GetExtension(songModel.FilePath)}";
@@ -64,7 +64,7 @@ public class ParserServiceTests
     public async Task AddMetaDataToFile_ShouldAddMetadata([Frozen] SongModel songModel)
     {
         // Arrange
-        if (!File.Exists(songModel.FilePath)) File.Copy("Recording.m4a", songModel.FilePath, true);
+        if (!File.Exists(songModel.FilePath)) File.Copy("Samples\\Recording.m4a", songModel.FilePath, true);
 
         // Act
         await _parserService.AddMetaDataToFile(songModel);

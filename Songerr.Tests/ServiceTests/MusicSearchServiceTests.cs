@@ -29,7 +29,7 @@ public class MusicSearchServiceTests
         _spotifyClientSearchMock.Setup(s => s.GetSpotifyAccessTokenAsync()).ReturnsAsync(null as string);
 
         // Act & Assert
-        await Assert.ThrowsAsync<Exception>(() => _musicSearchService.SearchSpotifyMetaData(songModel));
+        await Assert.ThrowsAsync<Exception>(() => _musicSearchService.SearchSpotifyMetadata(songModel));
     }
 
     [Theory]
@@ -42,7 +42,7 @@ public class MusicSearchServiceTests
             .ReturnsAsync((SpotifyResults?)null);
 
         // Act & Assert
-        await _musicSearchService.SearchSpotifyMetaData(songModel);
+        await _musicSearchService.SearchSpotifyMetadata(songModel);
     }
 
     [Theory]
@@ -63,7 +63,7 @@ public class MusicSearchServiceTests
             .ReturnsAsync(spotifyResults);
 
         // Act
-        await _musicSearchService.SearchSpotifyMetaData(songModel);
+        await _musicSearchService.SearchSpotifyMetadata(songModel);
 
         // Assert
         Assert.Equal("InitialAlbum", songModel.Album);
@@ -98,7 +98,7 @@ public class MusicSearchServiceTests
             .ReturnsAsync(spotifyResults);
 
         // Act
-        await _musicSearchService.SearchSpotifyMetaData(songModel);
+        await _musicSearchService.SearchSpotifyMetadata(songModel);
 
         // Assert
         Assert.Equal("Test Album", songModel.Album);

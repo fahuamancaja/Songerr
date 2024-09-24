@@ -7,7 +7,7 @@ namespace Songerr.Domain.Services;
 
 public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMusicSearchService
 {
-    public async Task SearchSpotifyMetaData(SongModel? songModel)
+    public async Task SearchSpotifyMetadata(SongModel? songModel)
     {
         var accessToken = await spotifyClientSearch.GetSpotifyAccessTokenAsync() ??
                           throw new Exception("Failed to retrieve access token.");

@@ -12,7 +12,7 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
 {
     private readonly LocalSettings _settings = settings.Value;
 
-    public async Task MoveFileToCorrectLocationAsync<T>(T songModel) where T : IFileModel
+    public async Task MoveFileToCorrectLocation<T>(T songModel) where T : IFileModel
     {
         var fileExtension = Path.GetExtension(songModel.FilePath);
         var titleName = $"{songModel.Author} - {songModel.Title}";

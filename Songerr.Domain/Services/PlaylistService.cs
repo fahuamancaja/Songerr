@@ -15,9 +15,12 @@ public class PlaylistService(IMapper mapper, IYoutubeDlClient youtubeDlClient, I
         if (playListModels == null) return null;
         Log.Information($"Obtained playlist models from Youtube Dl for {playListModels.Count} audio files");
 
-        var songModels = playListModels.Any() ? playListModels.Select(mapper.Map<SongModel>).ToList() : null;
+        var songModels = playListModels
+            .Select(mapper.Map<SongModel>)
+            .Where(mappedResult => mappedResult != null)   // Filter out nulls after mapping
+            .ToList();
 
-        if (songModels == null) return [];
+        if (songModels.Count == 0) return [];
 
         foreach (var songModel in songModels) await songerrService.SongerrPlaylistService(songModel);
 

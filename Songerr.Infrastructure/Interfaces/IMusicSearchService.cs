@@ -5,5 +5,5 @@ namespace Songerr.Infrastructure.Interfaces;
 public interface IMusicSearchService
 {
     //Task<string> GetSongInfoAsync();
-    Task SearchSpotifyMetaData(SongModel? songModel);
+    Task SearchSpotifyMetadata(SongModel? songModel);
 }
