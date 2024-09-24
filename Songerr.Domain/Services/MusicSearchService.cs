@@ -1,13 +1,6 @@
-﻿using System.Net;
-using System.Text.RegularExpressions;
-using Microsoft.Extensions.Options;
-using Newtonsoft.Json;
-using RestSharp;
+﻿using System.Text.RegularExpressions;
 using Serilog;
-using Songerr.Domain.Models;
 using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.Models;
-using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 
 namespace Songerr.Domain.Services;
@@ -16,15 +9,13 @@ public class MusicSearchService(ISpotifyClientSearch spotifyClientSearch) : IMus
 {
     public async Task SearchSpotifyMetaData(SongModel? songModel)
     {
-        var accessToken = await spotifyClientSearch.GetSpotifyAccessTokenAsync() ?? throw new Exception("Failed to retrieve access token.");
-        
+        var accessToken = await spotifyClientSearch.GetSpotifyAccessTokenAsync() ??
+                          throw new Exception("Failed to retrieve access token.");
+
         var spotifySong = await spotifyClientSearch.GetSpotifyMetaData(songModel, accessToken);
 
         var firstItem = spotifySong?.tracks?.items?.FirstOrDefault();
-        if (firstItem != null)
-        {
-            songModel!.Album = CleanAlbumName(firstItem.album?.name);
-        }
+        if (firstItem != null) songModel!.Album = CleanAlbumName(firstItem.album?.name);
     }
 
     private static string? CleanAlbumName(string? input)

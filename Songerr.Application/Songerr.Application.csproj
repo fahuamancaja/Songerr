@@ -10,7 +10,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Logs\" />
+        <Folder Include="Logs\"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -20,23 +20,23 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Songerr.Domain\Songerr.Domain.csproj" />
+        <ProjectReference Include="..\Songerr.Domain\Songerr.Domain.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Elastic.Ingest.Elasticsearch" Version="0.7.1" />
-      <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
-      <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0" />
-      <PackageReference Include="Serilog.Sinks.Syslog" Version="0.2.0" />
-      <PackageReference Include="SyslogNet.Client" Version="0.3.3" />
-      <PackageReference Include="Unidecode.NET" Version="2.1.0" />
+        <PackageReference Include="Elastic.Ingest.Elasticsearch" Version="0.7.1"/>
+        <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1"/>
+        <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0"/>
+        <PackageReference Include="Serilog.Sinks.Syslog" Version="0.2.0"/>
+        <PackageReference Include="SyslogNet.Client" Version="0.3.3"/>
+        <PackageReference Include="Unidecode.NET" Version="2.1.0"/>
     </ItemGroup>
 
     <Target Name="EnsureLogsFolder" AfterTargets="Build">
         <!-- Check for Windows -->
-        <Exec Command="IF NOT EXIST $(OutDir)Logs mkdir $(OutDir)Logs" Condition=" '$(OS)' == 'Windows_NT' " />
+        <Exec Command="IF NOT EXIST $(OutDir)Logs mkdir $(OutDir)Logs" Condition=" '$(OS)' == 'Windows_NT' "/>
         <!-- Check for Unix-based systems -->
-        <Exec Command="mkdir -p '$(OutDir)Logs'" Condition=" '$(OS)' != 'Windows_NT' " />
+        <Exec Command="mkdir -p '$(OutDir)Logs'" Condition=" '$(OS)' != 'Windows_NT' "/>
     </Target>
 
 </Project>

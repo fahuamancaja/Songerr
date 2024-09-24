@@ -17,13 +17,13 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
 {
     private readonly LocalSettings _settings = settings.Value;
 
-    
+
     public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string? playlistId)
     {
         var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
         return await youtubeClient.Playlists.GetVideosAsync(playlistUrl);
     }
-    
+
     public async Task<string?> DownloadAudioFile(SongModel? songModel)
     {
         try
@@ -31,13 +31,13 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
             var url = $"https://music.youtube.com/watch?v={songModel?.Id}";
             Log.Information(_settings.OperatingSystem!);
 
-            var ytdl = _settings.OperatingSystem == "Linux" ? 
-                new YoutubeDL { YoutubeDLPath = _settings.YoutubeDLPath, FFmpegPath = _settings.FFmpegPath } : 
-                youtubeDl;
+            var ytdl = _settings.OperatingSystem == "Linux"
+                ? new YoutubeDL { YoutubeDLPath = _settings.YoutubeDLPath, FFmpegPath = _settings.FFmpegPath }
+                : youtubeDl;
 
             var result = await ytdl.RunAudioDownload(url, AudioConversionFormat.Opus).ConfigureAwait(false);
             var res = result.Data;
-        
+
             Log.Information($"Downloaded opus audio file {res}");
             return res;
         }

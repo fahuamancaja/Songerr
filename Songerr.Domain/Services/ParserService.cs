@@ -11,6 +11,7 @@ namespace Songerr.Domain.Services;
 public class ParserService(IOptions<LocalSettings> settings) : IParserService
 {
     private readonly LocalSettings _settings = settings.Value;
+
     public async Task MoveFileToCorrectLocationAsync<T>(T songModel) where T : IFileModel
     {
         var fileExtension = Path.GetExtension(songModel.FilePath);

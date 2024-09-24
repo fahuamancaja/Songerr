@@ -1,11 +1,7 @@
 using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Flurl;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using RestSharp;
 using Serilog;
 using Songerr.Infrastructure.Interfaces;
@@ -18,7 +14,7 @@ namespace Songerr.Infrastructure.ApiClients;
 public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientSearch
 {
     private readonly SpotifySettings _settings = settings.Value;
-    
+
     public async Task<string?> GetSpotifyAccessTokenAsync()
     {
         var client = new RestClient("https://accounts.spotify.com/api/token");
@@ -34,7 +30,6 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
         if (response.Content == null) return null;
         var jsonResponse = JsonConvert.DeserializeObject<dynamic>(response.Content);
         return jsonResponse?.access_token;
-
     }
 
     public async Task<SpotifyResults?> GetSpotifyMetaData(SongModel? songModel, string accessToken)
@@ -46,16 +41,13 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
             .WithHeader("Authorization", $"Bearer {accessToken}");
 
         var response = await request.GetAsync();
-        
+
         // Check if the response is successful
-        if (response.StatusCode == 200)
-        {
-            return await response.GetJsonAsync<SpotifyResults>();
-        }
-        
+        if (response.StatusCode == 200) return await response.GetJsonAsync<SpotifyResults>();
+
         // Log the error and return null
         Log.Error($"Failed to fetch Spotify metadata. Status code: {response.StatusCode}");
-        
+
         return null;
     }
 }

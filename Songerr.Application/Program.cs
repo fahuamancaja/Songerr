@@ -44,9 +44,7 @@ app.UseExceptionHandler(appError =>
     {
         var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
         if (exceptionHandlerFeature?.Error != null)
-        {
             await context.Response.WriteAsJsonAsync(new { error = exceptionHandlerFeature.Error.Message });
-        }
     });
 });
 

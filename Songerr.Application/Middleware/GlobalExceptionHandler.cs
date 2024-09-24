@@ -6,7 +6,8 @@ namespace Songerr.Application.Middleware;
 
 public class GlobalExceptionHandler : IExceptionHandler
 {
-    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
+    public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception,
+        CancellationToken cancellationToken)
     {
         var statusCode = GetStatusCode(exception);
         var problemDetails = new ProblemDetails
@@ -14,11 +15,11 @@ public class GlobalExceptionHandler : IExceptionHandler
             Instance = httpContext.Request.Path,
             Title = exception.Message,
             Status = statusCode,
-            Detail = exception.StackTrace,
+            Detail = exception.StackTrace
         };
-        
+
         Log.Error(exception, "An error occurred.");
-        
+
         httpContext.Response.StatusCode = statusCode;
         await httpContext.Response.WriteAsJsonAsync(problemDetails.ToString());
 

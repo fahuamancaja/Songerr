@@ -16,16 +16,13 @@ public static class ServiceCollectionExtension
     {
         // Exception Handler
         services.AddSingleton<IExceptionHandler, GlobalExceptionHandler>();
-        
+
         // Add services to the container.
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddAutoMapper(typeof(Program));
-        services.AddMediatR(cfg =>
-        {
-            cfg.RegisterServicesFromAssemblyContaining<Program>();
-        });
+        services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblyContaining<Program>(); });
 
         // Register Services
         services.AddScoped<IPlaylistService, PlaylistService>();
@@ -37,7 +34,7 @@ public static class ServiceCollectionExtension
         services.AddScoped<IYoutubeDlService, YoutubeDlService>();
         services.AddSingleton<YoutubeDL>();
         services.AddSingleton<YoutubeClient>();
-        
+
         // Register commands
         services.AddTransient<ISongProcessingCommand, ParseVideoUrlCommand>();
         services.AddTransient<ISongProcessingCommand, GetSongMetadataCommand>();

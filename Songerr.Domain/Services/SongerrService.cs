@@ -20,6 +20,7 @@ public class SongerrService(
         new MoveFileToCorrectLocationCommand(parserService),
         new AddMetadataToFileCommand(parserService)
     ];
+
     private readonly ISongProcessingCommand[] _playlistCommands =
     [
         new SearchSpotifyMetadataCommand(musicSearchService),
@@ -33,33 +34,32 @@ public class SongerrService(
         var songModel = new SongModel { Id = videoId };
 
         Log.Information($"Starting to process video ID: {videoId}");
-        
+
         foreach (var command in _commands)
         {
             await command.ExecuteAsync(songModel).ConfigureAwait(false);
-            
+
             if (command is ParseVideoUrlCommand && songModel.Id == null)
                 throw new ArgumentNullException(nameof(songModel.Id), "Song ID cannot be null.");
-            
+
             Log.Information($"Executed command: {command.GetType().Name}");
         }
 
         Log.Information($"Successfully processed video ID: {videoId}");
         return songModel;
     }
-    
+
     public async Task<SongModel?> SongerrPlaylistService(SongModel songModel)
     {
-
         Log.Information($"Starting to process video ID: {songModel.Id}");
-        
+
         foreach (var command in _playlistCommands)
         {
             await command.ExecuteAsync(songModel).ConfigureAwait(false);
-            
+
             if (command is ParseVideoUrlCommand && songModel.Id == null)
                 throw new ArgumentNullException(nameof(songModel.Id), "Song ID cannot be null.");
-            
+
             Log.Information($"Executed command: {command.GetType().Name}");
         }
 

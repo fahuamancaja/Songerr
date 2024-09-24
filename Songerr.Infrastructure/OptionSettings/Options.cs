@@ -1,4 +1,3 @@
-
 namespace Songerr.Infrastructure.OptionSettings;
 
 public class YoutubeSettings
