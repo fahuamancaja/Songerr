@@ -1,15 +1,13 @@
-﻿using AutoFixture.Xunit2;
-using AutoMapper;
+﻿using AutoMapper;
 using Moq;
 using Songerr.Domain.Services;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
-using Xunit;
 using YoutubeExplode.Common;
 using YoutubeExplode.Videos;
 
-namespace Songerr.Tests
+namespace Songerr.Tests.ServiceTests
 {
     public class YoutubeDlServiceTests
     {

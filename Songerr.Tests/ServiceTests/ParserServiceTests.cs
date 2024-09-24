@@ -6,20 +6,19 @@ using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
-namespace Songerr.Tests;
+namespace Songerr.Tests.ServiceTests;
 
 public class ParserServiceTests
 {
     private readonly ParserService _parserService;
-    private readonly Mock<IOptions<LocalSettings>> _settingsMock;
 
     public ParserServiceTests()
     {
-        _settingsMock = new Mock<IOptions<LocalSettings>>();
+        Mock<IOptions<LocalSettings>> settingsMock = new();
         var localSettings = new LocalSettings { DownloadPath = "C:\\MusicDownloads" };
-        _settingsMock.Setup(x => x.Value).Returns(localSettings);
+        settingsMock.Setup(x => x.Value).Returns(localSettings);
 
-        _parserService = new ParserService(_settingsMock.Object);
+        _parserService = new ParserService(settingsMock.Object);
     }
 
     [Theory]
@@ -28,7 +27,7 @@ public class ParserServiceTests
         [Frozen] SongModel songModel)
     {
         // Arrange
-        if (!File.Exists(songModel.FilePath)) File.Copy("Recording.m4a", songModel.FilePath, true);
+        if (!File.Exists(songModel.FilePath)) File.Copy("Samples\\Recording.m4a", songModel.FilePath, true);
 
         songModel.Author = "Test Artist";
         songModel.Album = "Test Album";

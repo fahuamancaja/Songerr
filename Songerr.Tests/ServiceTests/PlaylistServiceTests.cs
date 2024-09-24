@@ -1,15 +1,12 @@
-﻿using AutoFixture.Xunit2;
-using AutoMapper;
+﻿using AutoMapper;
 using Moq;
-using Serilog;
 using Songerr.Domain.Services;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
-using Xunit;
 using YoutubeExplode.Playlists;
 
-namespace Songerr.Tests
+namespace Songerr.Tests.ServiceTests
 {
     public class PlaylistServiceTests
     {

@@ -1,14 +1,10 @@
-﻿using AutoFixture.Xunit2;
-using Moq;
-using Serilog;
-using Songerr.Domain.Factories;
+﻿using Moq;
 using Songerr.Domain.Services;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
-using Xunit;
 
-namespace Songerr.Tests
+namespace Songerr.Tests.ServiceTests
 {
     public class SongerrServiceTests
     {
