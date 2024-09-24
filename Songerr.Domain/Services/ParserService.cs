@@ -14,7 +14,7 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
     public async Task MoveFileToCorrectLocationAsync<T>(T songModel) where T : IFileModel
     {
         var fileExtension = Path.GetExtension(songModel.FilePath);
-        var titlename = $"{songModel.Author} - {songModel.Title}";
+        var titleName = $"{songModel.Author} - {songModel.Title}";
         var rootDirectoryPath = _settings.DownloadPath;
 
         if (songModel.Author != null)
@@ -23,7 +23,7 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
 
             var fullAlbumDirectory = Path.Combine(rootDirectoryPath!, albumArtistPath);
 
-            var newFileName = Path.ChangeExtension(titlename, fileExtension);
+            var newFileName = Path.ChangeExtension(titleName, fileExtension);
             var newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
             Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
 
