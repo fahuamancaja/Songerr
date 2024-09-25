@@ -4,7 +4,7 @@ using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
-namespace Songerr.Tests.ServiceTests;
+namespace Songerr.Tests.UnitTests.ServiceTests;
 
 public class SongerrServiceTests
 {

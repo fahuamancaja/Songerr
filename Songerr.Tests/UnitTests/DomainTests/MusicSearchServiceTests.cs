@@ -6,7 +6,7 @@ using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.Models;
 using Songerr.Infrastructure.PayloadModels;
 
-namespace Songerr.Tests.ServiceTests;
+namespace Songerr.Tests.UnitTests.ServiceTests;
 
 public class MusicSearchServiceTests
 {

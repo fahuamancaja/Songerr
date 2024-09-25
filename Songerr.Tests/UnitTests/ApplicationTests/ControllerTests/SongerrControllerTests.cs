@@ -7,7 +7,7 @@ using Songerr.Domain.Models;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
-namespace Songerr.Tests.ControllerTests;
+namespace Songerr.Tests.UnitTests.ControllerTests;
 
 public class SongerrControllerTests
 {

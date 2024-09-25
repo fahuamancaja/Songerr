@@ -21,7 +21,8 @@ public class GlobalExceptionHandler : IExceptionHandler
         Log.Error(exception, "An error occurred.");
 
         httpContext.Response.StatusCode = statusCode;
-        await httpContext.Response.WriteAsJsonAsync(problemDetails.ToString());
+        httpContext.Response.ContentType = "application/json";
+        await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
         return true;
     }

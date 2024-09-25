@@ -17,7 +17,7 @@ public class SongerrController(IMediator mediator) : ControllerBase
 
         var songModel = await mediator.Send(new DownloadVideoAsMp3Command { Url = songInput.Url })
             .ConfigureAwait(false);
-        Log.Information($"Successfully converted video URL. MP3 file path: {songModel.FilePath}");
+        Log.Information($"Successfully converted video URL. Audio file path: {songModel.FilePath}");
 
         return Ok($"Completed {songModel.Title}");
     }

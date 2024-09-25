@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.OptionSettings;
@@ -16,13 +17,6 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
     : IYoutubeDlClient
 {
     private readonly LocalSettings _settings = settings.Value;
-
-
-    public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string? playlistId)
-    {
-        var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
-        return await youtubeClient.Playlists.GetVideosAsync(playlistUrl);
-    }
 
     public async Task<string?> DownloadAudioFile(SongModel? songModel)
     {
@@ -62,5 +56,11 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
             Log.Error($"Error fetching song metadata: {ex.Message}");
             return null;
         }
+    }
+    
+    public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string? playlistId)
+    {
+        var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";
+        return await youtubeClient.Playlists.GetVideosAsync(playlistUrl);
     }
 }

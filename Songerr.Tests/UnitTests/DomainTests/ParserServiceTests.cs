@@ -6,7 +6,7 @@ using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
-namespace Songerr.Tests.ServiceTests;
+namespace Songerr.Tests.UnitTests.ServiceTests;
 
 public class ParserServiceTests
 {
