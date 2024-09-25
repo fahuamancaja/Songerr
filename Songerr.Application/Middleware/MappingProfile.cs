@@ -17,7 +17,7 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Title,
                 opt => opt.MapFrom(src => RemoveBracesAndTrailingSpacesAndSpecialChars(src.Title)))
             .ForMember(dest => dest.Author,
-                opt => opt.MapFrom(src => RemoveBracesAndTrailingSpacesAndSpecialChars(src.Author.Title)));
+                opt => opt.MapFrom(src => RemoveBracesAndTrailingSpacesAndSpecialChars(src.Author.ChannelTitle)));
 
         CreateMap<Video, SongModel>()
             .ForMember(dest => dest.Id, opt => opt.MapFrom(src => src.Id.Value)) // Convert VideoId to string
