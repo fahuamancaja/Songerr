@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Diagnostics;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
@@ -6,13 +5,11 @@ using Songerr.Application.Middleware;
 
 namespace Songerr.Application;
 
-[ExcludeFromCodeCoverage]
 public class Program
 {
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
-
         // Serilog Configuration
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
@@ -28,23 +25,32 @@ public class Program
             .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
             .CreateLogger();
 
-        // Add ServiceCollection Services
+        // Register services by calling the RegisterServices method
         builder.Services.RegisterServices(builder.Configuration);
+        builder.Services.AddHealthChecks();
 
         var app = builder.Build();
 
-        // Configure the HTTP request pipeline.
+        // Enable the Middleware for development
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
             app.UseSwaggerUI();
         }
 
-        app.UseMiddleware<ApiKeyMiddleware>();
-        //app.UseHttpsRedirection();
-        app.UseAuthorization();
-        app.MapControllers();
+        // Enable static files middleware
+        app.UseStaticFiles();
 
+        app.UseRouting();
+
+        // Apply custom middleware only to non-health endpoints
+        app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"),
+            appBuilder => { appBuilder.UseMiddleware<ApiKeyMiddleware>(); });
+
+        // Map health check endpoints and ensure they return JSON
+        app.MapHealthChecks("/health");
+
+        // Global exception handler
         app.UseExceptionHandler(appError =>
         {
             appError.Run(async context =>
@@ -54,6 +60,11 @@ public class Program
                     await context.Response.WriteAsJsonAsync(new { error = exceptionHandlerFeature.Error.Message });
             });
         });
+
+        app.UseAuthorization();
+
+        // Map other endpoints, including controllers
+        app.MapControllers();
 
         app.Run();
     }

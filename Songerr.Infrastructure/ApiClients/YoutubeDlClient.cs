@@ -12,6 +12,7 @@ using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
 namespace Songerr.Infrastructure.ApiClients;
+
 [ExcludeFromCodeCoverage]
 public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtubeDl, YoutubeClient youtubeClient)
     : IYoutubeDlClient

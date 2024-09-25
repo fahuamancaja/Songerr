@@ -9,6 +9,7 @@ using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 
 namespace Songerr.Infrastructure.ApiClients;
+
 [ExcludeFromCodeCoverage]
 public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientSearch
 {

@@ -40,7 +40,8 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
         {
             var newFileName = Path.ChangeExtension(titleName, fileExtension);
             var newFilePath = Path.Combine(rootDirectoryPath, newFileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath) ?? throw new InvalidOperationException("Directory path should not be null"));
+            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath) ??
+                                      throw new InvalidOperationException("Directory path should not be null"));
 
             // Copy the file to the new location, overwriting if it already exists
             await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));

@@ -49,6 +49,9 @@ public static class ServiceCollectionExtension
         services.Configure<SongerrSettings>(configuration.GetSection("Songerr.Application"));
         services.Configure<LocalSettings>(configuration.GetSection("AppSettings:LocalSettings"));
 
+        // Add basic health check services
+        services.AddHealthChecks();
+
         return services;
     }
 }
