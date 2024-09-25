@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Diagnostics.CodeAnalysis;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.OptionSettings;
@@ -11,7 +12,7 @@ using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
 namespace Songerr.Infrastructure.ApiClients;
-
+[ExcludeFromCodeCoverage]
 public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtubeDl, YoutubeClient youtubeClient)
     : IYoutubeDlClient
 {

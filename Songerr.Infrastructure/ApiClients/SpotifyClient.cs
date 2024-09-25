@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Flurl.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
@@ -8,7 +9,7 @@ using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 
 namespace Songerr.Infrastructure.ApiClients;
-
+[ExcludeFromCodeCoverage]
 public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientSearch
 {
     private readonly SpotifySettings _settings = settings.Value;

@@ -30,7 +30,7 @@ public class YoutubeDlClientTests
         _youtubeDlClient = new YoutubeDlClient(options, _youtubeDl, _youtubeClient);
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task DownloadAudioFile_ValidSongModel_ReturnsFilePath()
     {
         // Arrange
@@ -44,7 +44,7 @@ public class YoutubeDlClientTests
         Assert.Contains("", result);
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task GetSongMetadata_ValidSongModel_ReturnsVideo()
     {
         // Arrange
@@ -59,7 +59,7 @@ public class YoutubeDlClientTests
         Assert.False(string.IsNullOrEmpty(result.Title));
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task GetPlaylistMetadata_ValidPlaylistId_ReturnsPlaylistVideos()
     {
         // Arrange

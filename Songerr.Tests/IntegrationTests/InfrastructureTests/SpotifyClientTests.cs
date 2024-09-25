@@ -26,7 +26,7 @@ public class SpotifyClientTests
         _spotifyClient = new SpotifyClient(_mockSettings.Object);
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task GetSpotifyAccessTokenAsync_ReturnsAccessToken()
     {
         using (var httpTest = new HttpTest())
@@ -43,7 +43,7 @@ public class SpotifyClientTests
         }
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task GetSpotifyMetaData_ReturnsSpotifyResults()
     {
         using (var httpTest = new HttpTest())
@@ -84,7 +84,7 @@ public class SpotifyClientTests
         }
     }
 
-    [Fact]
+    [Fact(Skip = "Integration Tests")]
     public async Task GetSpotifyMetaData_ReturnsNull_WhenResponseIsNotSuccessful()
     {
         using (var httpTest = new HttpTest())

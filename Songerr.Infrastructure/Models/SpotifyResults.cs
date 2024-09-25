@@ -1,6 +1,7 @@
-﻿namespace Songerr.Infrastructure.Models;
+﻿using System.Diagnostics.CodeAnalysis;
 
-// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+namespace Songerr.Infrastructure.Models;
+[ExcludeFromCodeCoverage]
 public class Album
 {
     public string? album_type { get; set; }
@@ -18,6 +19,7 @@ public class Album
     public string? uri { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class Artist
 {
     public ExternalUrls? external_urls { get; set; }
@@ -28,16 +30,19 @@ public class Artist
     public string? uri { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class ExternalIds
 {
     public string? isrc { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class ExternalUrls
 {
     public string? spotify { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class Image
 {
     public int height { get; set; }
@@ -45,6 +50,7 @@ public class Image
     public int width { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class Item
 {
     public Album? album { get; set; }
@@ -66,11 +72,13 @@ public class Item
     public string? uri { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class SpotifyResults
 {
     public Tracks? tracks { get; set; }
 }
 
+[ExcludeFromCodeCoverage]
 public class Tracks
 {
     public string? href { get; set; }
