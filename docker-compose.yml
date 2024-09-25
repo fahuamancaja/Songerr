@@ -20,6 +20,7 @@ services:
       - 9200:9200
     networks:
       - elk
+    restart: always
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.0
@@ -33,6 +34,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: always
 
   songerr-api:
     image: songerr-api:latest
@@ -51,6 +53,7 @@ services:
       - elk
     volumes:
       - E:\Music:/app/music
+    restart: unless-stopped
 
 networks:
   elk:

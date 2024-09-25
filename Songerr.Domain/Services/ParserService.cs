@@ -18,15 +18,29 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
         var titleName = $"{songModel.Author} - {songModel.Title}";
         var rootDirectoryPath = _settings.DownloadPath;
 
-        if (songModel.Author != null)
+        if (songModel is { Author: not null, Album: not null })
         {
-            var albumArtistPath = Path.Combine(songModel.Author, songModel.Album!);
+            var albumArtistPath = Path.Combine(songModel.Author, songModel.Album);
 
             var fullAlbumDirectory = Path.Combine(rootDirectoryPath!, albumArtistPath);
 
             var newFileName = Path.ChangeExtension(titleName, fileExtension);
             var newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
             Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
+
+            // Copy the file to the new location, overwriting if it already exists
+            await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
+
+            // Delete the original file
+            await Task.Run(() => File.Delete(songModel.FilePath!));
+
+            songModel.FilePath = newFilePath;
+        }
+        else
+        {
+            var newFileName = Path.ChangeExtension(titleName, fileExtension);
+            var newFilePath = Path.Combine(rootDirectoryPath, newFileName);
+            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath) ?? throw new InvalidOperationException("Directory path should not be null"));
 
             // Copy the file to the new location, overwriting if it already exists
             await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
