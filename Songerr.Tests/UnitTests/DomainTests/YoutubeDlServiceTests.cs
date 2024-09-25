@@ -7,7 +7,7 @@ using Songerr.Tests.AutoDataAttributes;
 using YoutubeExplode.Common;
 using YoutubeExplode.Videos;
 
-namespace Songerr.Tests.UnitTests.ServiceTests;
+namespace Songerr.Tests.UnitTests.DomainTests;
 
 public class YoutubeDlServiceTests
 {

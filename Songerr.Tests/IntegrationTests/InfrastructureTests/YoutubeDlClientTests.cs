@@ -2,19 +2,16 @@
 using Songerr.Infrastructure.ApiClients;
 using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
-using System.Threading.Tasks;
-using Xunit;
 using YoutubeDLSharp;
 using YoutubeExplode;
-using YoutubeExplode.Common;
-using YoutubeExplode.Playlists;
-using YoutubeExplode.Videos;
+
+namespace Songerr.Tests.IntegrationTests.InfrastructureTests;
 
 public class YoutubeDlClientTests
 {
     private readonly LocalSettings _settings;
-    private readonly YoutubeDL _youtubeDl;
     private readonly YoutubeClient _youtubeClient;
+    private readonly YoutubeDL _youtubeDl;
     private readonly YoutubeDlClient _youtubeDlClient;
 
     public YoutubeDlClientTests()
@@ -38,7 +35,7 @@ public class YoutubeDlClientTests
     {
         // Arrange
         var songModel = new SongModel { Id = "ValidYoutubeVideoId" };
-        
+
         // Act
         var result = await _youtubeDlClient.DownloadAudioFile(songModel);
 

@@ -6,7 +6,7 @@ using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 using YoutubeExplode.Playlists;
 
-namespace Songerr.Tests.UnitTests.ServiceTests;
+namespace Songerr.Tests.UnitTests.DomainTests;
 
 public class PlaylistServiceTests
 {

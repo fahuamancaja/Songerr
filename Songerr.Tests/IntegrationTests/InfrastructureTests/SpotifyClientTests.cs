@@ -7,7 +7,7 @@ using Songerr.Infrastructure.Models;
 using Songerr.Infrastructure.OptionSettings;
 using Songerr.Infrastructure.PayloadModels;
 
-namespace Songerr.Tests.IntegrationTests;
+namespace Songerr.Tests.IntegrationTests.InfrastructureTests;
 
 public class SpotifyClientTests
 {

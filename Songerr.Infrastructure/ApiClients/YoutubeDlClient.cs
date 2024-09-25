@@ -1,5 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Serilog;
 using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.OptionSettings;
@@ -57,7 +56,7 @@ public class YoutubeDlClient(IOptions<LocalSettings> settings, YoutubeDL youtube
             return null;
         }
     }
-    
+
     public async Task<IReadOnlyList<PlaylistVideo>?> GetPlaylistMetadata(string? playlistId)
     {
         var playlistUrl = $"https://music.youtube.com/playlist?list={playlistId}";

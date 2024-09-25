@@ -6,6 +6,8 @@ using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
+namespace Songerr.Tests.UnitTests.ApplicationTests.MiddlewareTests;
+
 public class MappingProfileTests
 {
     private readonly IMapper _mapper;
