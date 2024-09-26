@@ -16,17 +16,7 @@ public class Program
 
         // Serilog Configuration
         Log.Logger = new LoggerConfiguration()
-            .Enrich.FromLogContext()
-            .Enrich.WithMachineName()
-            .WriteTo.Console()
-            .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))
-            {
-                IndexFormat = "aspnetcore-logs-{0:yyyy.MM.dd}",
-                AutoRegisterTemplate = true,
-                NumberOfShards = 2,
-                NumberOfReplicas = 1
-            })
-            .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+            .ReadFrom.Configuration(builder.Configuration) // Read from configuration
             .CreateLogger();
 
         // Register services by calling the RegisterServices method
@@ -52,6 +42,9 @@ public class Program
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
+        
+        app.UseAuthorization();
+
         app.UseEndpoints(config => config.MapHealthChecksUI(setup =>
         {
             setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css");
@@ -71,7 +64,6 @@ public class Program
             });
         });
 
-        app.UseAuthorization();
 
         // Map other endpoints, including controllers
         app.MapControllers();
