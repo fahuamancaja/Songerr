@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Moq;
@@ -9,7 +8,6 @@ using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.OptionSettings;
 using YoutubeDLSharp;
 using YoutubeExplode;
-using Xunit;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.MiddlewareTests;
 

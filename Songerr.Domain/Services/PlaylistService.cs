@@ -22,7 +22,8 @@ public class PlaylistService(IMapper mapper, IYoutubeDlClient youtubeDlClient, I
 
         if (songModels.Count == 0) return [];
 
-        foreach (var songModel in songModels) await songerrService.SongerrPlaylistService(songModel).ConfigureAwait(false);
+        foreach (var songModel in songModels)
+            await songerrService.SongerrPlaylistService(songModel).ConfigureAwait(false);
 
         return songModels;
     }

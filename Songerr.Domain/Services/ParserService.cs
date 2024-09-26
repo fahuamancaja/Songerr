@@ -19,20 +19,13 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
             ? songModel.Title
             : $"{songModel.Author} - {songModel.Title}";
         var rootDirectoryPath = _settings.DownloadPath;
-        string? destinationDirectory = rootDirectoryPath;
+        var destinationDirectory = rootDirectoryPath;
 
         if (songModel.Author is not null && songModel.Album is not null)
-        {
             destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Author, songModel.Album);
-        }
         else if (songModel.Author is not null)
-        {
             destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Author);
-        }
-        else if (songModel.Album is not null)
-        {
-            destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Album);
-        }
+        else if (songModel.Album is not null) destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Album);
 
         var newFileName = Path.ChangeExtension(titleName, fileExtension);
         var newFilePath = Path.Combine(destinationDirectory!, newFileName);

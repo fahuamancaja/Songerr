@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Moq;
 using Songerr.Application.Middleware;
-using Xunit;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.MiddlewareTests;
 

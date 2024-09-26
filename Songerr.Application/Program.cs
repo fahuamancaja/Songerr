@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -6,7 +7,7 @@ using Serilog.Sinks.Elasticsearch;
 using Songerr.Application.Middleware;
 
 namespace Songerr.Application;
-
+[ExcludeFromCodeCoverage]
 public class Program
 {
     public static void Main(string[] args)
@@ -46,7 +47,7 @@ public class Program
         app.UseRouting();
 
         app.UseMiddleware<ApiKeyMiddleware>();
-        app.MapHealthChecks("/health", new HealthCheckOptions()
+        app.MapHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse

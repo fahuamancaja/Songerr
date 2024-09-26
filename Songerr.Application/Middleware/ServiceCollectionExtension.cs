@@ -1,7 +1,3 @@
-using HealthChecks.UI.Client;
-using Microsoft.AspNetCore.Diagnostics;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Songerr.Domain.Factories;
 using Songerr.Domain.Services;
@@ -28,7 +24,7 @@ public static class ServiceCollectionExtension
 
         // Register authorization services
         services.AddAuthorization();
-        services.AddAuthentication(/* scheme configurations if needed */);
+        services.AddAuthentication( /* scheme configurations if needed */);
 
         // Register other services
         services.AddScoped<IPlaylistService, PlaylistService>();
@@ -57,12 +53,13 @@ public static class ServiceCollectionExtension
 
         // Add basic health check services
         services.AddHealthChecks()
-                .AddCheck("API Health Check", () =>
-                {
-                    var isHealthy = true; // Simulate a health check
-                    return isHealthy ? HealthCheckResult.Healthy("The check indicates a healthy state.") :
-                                       HealthCheckResult.Unhealthy("The check indicates an unhealthy state.");
-                }, tags: new[] { "AspNetCore" }, new TimeSpan(0, 1, 0));
+            .AddCheck("API Health Check", () =>
+            {
+                var isHealthy = true; // Simulate a health check
+                return isHealthy
+                    ? HealthCheckResult.Healthy("The check indicates a healthy state.")
+                    : HealthCheckResult.Unhealthy("The check indicates an unhealthy state.");
+            }, new[] { "AspNetCore" }, new TimeSpan(0, 1, 0));
 
         // Add HealthChecks UI
         var healthCheckUiSection = configuration.GetSection("HealthCheckUI:HealthChecks");
@@ -71,11 +68,8 @@ public static class ServiceCollectionExtension
             var name = healthCheck.GetValue<string>("Name");
             var uri = healthCheck.GetValue<string>("Uri");
             if (!string.IsNullOrEmpty(name) && !string.IsNullOrEmpty(uri))
-            {
                 services.AddHealthChecksUI(opt => opt.AddHealthCheckEndpoint(name, uri)).AddInMemoryStorage();
-            }
         }
-
 
         // Remove IExceptionHandler registration
         return services;
