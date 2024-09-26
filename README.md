@@ -52,8 +52,6 @@ This command will set up and start the Elasticsearch, Kibana, and Songerr API se
 Below is the `docker-compose.yml` configuration:
 
 ```yaml
-version: '3.7'
-
 services:
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.15.0
@@ -74,6 +72,7 @@ services:
       - 9200:9200
     networks:
       - elk
+    restart: always
 
   kibana:
     image: docker.elastic.co/kibana/kibana:7.15.0
@@ -87,6 +86,7 @@ services:
       - elk
     depends_on:
       - elasticsearch
+    restart: always
 
   songerr-api:
     image: songerr-api:latest
@@ -103,6 +103,7 @@ services:
       - elk
     volumes:
       - E:\Music:/app/music
+    restart: unless-stopped
 
 networks:
   elk:
@@ -180,24 +181,84 @@ Place the following configuration in your `appsettings.json` file:
       "ClientSecret": "YOUR_SPOTIFY_CLIENT_SECRET"
     },
     "LocalSettings": {
-      "DownloadPath": "/app/music",
-      "OperatingSystem": "Linux",
-      "YoutubeDLPath": "/venv/bin/yt-dlp",
-      "FFmpegPath": "/venv/bin/ffmpeg.exe"
+      "DownloadPath": "E:\\Test",
+      "OperatingSystem": "Windows"
     }
   },
   "Kestrel": {
     "Endpoints": {
       "Http": {
-        "Url": "http://*:5002"
+        "Url": "http://*:44330"
       }
     }
   },
   "ApiKeys": {
     "MyApiKey": "YOUR_UNIQUE_API_KEY"
+  },
+  "HealthCheckUI": {
+    "HealthChecks": [
+      {
+        "Name": "API",
+        "Uri": "http://localhost:44330/health"
+      }
+    ],
+    "Webhooks": [],
+    "EvaluationTimeInSeconds": 10,
+    "MinimumSecondsBetweenFailureNotifications": 60,
+    "ApiMaxActiveRequests": 1,
+    "MaximumHistoryEntriesPerEndpoint": 60
+  },
+  "HealthChecks": {
+    "Endpoints": {
+      "API": "http://localhost:44330/health"
+    }
+  },
+  "Serilog": {
+    "Using": [
+      "Serilog.Sinks.Console",
+      "Serilog.Sinks.Elasticsearch"
+    ],
+    "MinimumLevel": {
+      "Default": "Information",
+      "Override": {
+        "Microsoft": "Warning",
+        "System": "Warning"
+      }
+    },
+    "WriteTo": [
+      {
+        "Name": "Console"
+      },
+      {
+        "Name": "Elasticsearch",
+        "Args": {
+          "nodeUris": "http://elasticsearch:9200",
+          "indexFormat": "aspnetcore-logs-{0:yyyy.MM.dd}",
+          "autoRegisterTemplate": true,
+          "numberOfShards": 2,
+          "numberOfReplicas": 1
+        }
+      },
+      {
+        "Name": "File",
+        "Args": {
+          "path": "Logs/log-.txt",
+          "rollingInterval": "Day"
+        }
+      }
+    ],
+    "Enrich": [
+      "FromLogContext",
+      "WithMachineName"
+    ]
   }
 }
 ```
+
+### Accessing Health Checks
+
+To view the health checks, navigate to:
+`http://localhost:5002/healthchecks-ui#/healthchecks`
 
 ## Registering Services
 
