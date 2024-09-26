@@ -3,10 +3,10 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
-using Serilog.Sinks.Elasticsearch;
 using Songerr.Application.Middleware;
 
 namespace Songerr.Application;
+
 [ExcludeFromCodeCoverage]
 public class Program
 {
@@ -42,13 +42,10 @@ public class Program
             Predicate = _ => true,
             ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
         });
-        
-        app.UseAuthorization();
 
-        app.UseEndpoints(config => config.MapHealthChecksUI(setup =>
-        {
-            setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css");
-        }));
+        app.MapHealthChecksUI(setup => { setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css"); });
+
+        app.UseAuthorization();
 
         // Global exception handler
         app.UseExceptionHandler(appError =>
