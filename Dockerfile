@@ -1,8 +1,6 @@
 # Stage 1: Build base image
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
 EXPOSE 5002
 
 # Install prerequisites

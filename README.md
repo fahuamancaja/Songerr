@@ -94,8 +94,6 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
-      - "443:443"
       - "5002:5002"
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
@@ -124,7 +122,7 @@ volumes:
   - Runs on port `5601`
   - Connected to Elasticsearch
 - **Songerr API**:
-  - Exposes ports `80`, `443`, and `5002`
+  - Exposes ports `5002`
   - Depends on Elasticsearch
   - Volume `E:\Music` mapped to `/app/music` inside the container
 
@@ -221,50 +219,58 @@ In `Program.cs`, the main configuration and middleware setup is defined. Here is
 ```csharp
 var builder = WebApplication.CreateBuilder(args);
 
-// Serilog Configuration
-Log.Logger = new LoggerConfiguration()
-    .Enrich.FromLogContext()
-    .Enrich.WithMachineName()
-    .WriteTo.Console()
-    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://elasticsearch:9200"))
-    {
-        IndexFormat = "aspnetcore-logs-{0:yyyy.MM.dd}",
-        AutoRegisterTemplate = true,
-        NumberOfShards = 2,
-        NumberOfReplicas = 1
-    })
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
+        // Serilog Configuration
+        Log.Logger = new LoggerConfiguration()
+            .ReadFrom.Configuration(builder.Configuration) // Read from configuration
+            .CreateLogger();
 
-// Add Service Collection Services
-builder.Services.RegisterServices(builder.Configuration);
+        // Register services by calling the RegisterServices method
+        builder.Services.RegisterServices(builder.Configuration);
 
-var app = builder.Build();
+        var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
-app.UseMiddleware<ApiKeyMiddleware>();
-app.UseAuthorization();
-app.MapControllers();
-
-app.UseExceptionHandler(appError =>
-{
-    appError.Run(async context =>
-    {
-        var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
-        if (exceptionHandlerFeature?.Error != null)
+        // Enable the Middleware for development
+        if (app.Environment.IsDevelopment())
         {
-            await context.Response.WriteAsJsonAsync(new { error = exceptionHandlerFeature.Error.Message });
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
-    });
-});
 
-app.Run();
+        // Enable static files middleware
+        app.UseStaticFiles();
+
+        app.UseRouting();
+
+        app.UseMiddleware<ApiKeyMiddleware>();
+        app.MapHealthChecks("/health", new HealthCheckOptions
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+
+        app.MapHealthChecksUI(setup => { setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css"); });
+
+        app.UseAuthorization();
+
+        // Global exception handler
+        app.UseExceptionHandler(appError =>
+        {
+            appError.Run(async context =>
+            {
+                var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
+                if (exceptionHandlerFeature?.Error != null)
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = exceptionHandlerFeature.Error.Message
+                    });
+            });
+        });
+
+
+        // Map other endpoints, including controllers
+        app.MapControllers();
+
+        app.Run();
 ```
 
 ## Viewing Logs in Kibana
