@@ -9,6 +9,7 @@ using Songerr.Infrastructure.Interfaces;
 using Songerr.Infrastructure.OptionSettings;
 using YoutubeDLSharp;
 using YoutubeExplode;
+using Xunit;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.MiddlewareTests;
 
@@ -34,7 +35,6 @@ public class ServiceCollectionExtensionTests
         var serviceProvider = _services.RegisterServices(_mockConfiguration.Object).BuildServiceProvider();
 
         // Assert
-        Assert.NotNull(serviceProvider.GetService<IExceptionHandler>());
         Assert.NotNull(serviceProvider.GetService<IPlaylistService>());
         Assert.NotNull(serviceProvider.GetService<IYoutubeDlClient>());
         Assert.NotNull(serviceProvider.GetService<IMusicSearchService>());

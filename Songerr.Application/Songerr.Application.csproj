@@ -11,12 +11,14 @@
 
     <ItemGroup>
         <Folder Include="Logs\"/>
+        <Folder Include="wwwroot\" />
     </ItemGroup>
 
     <ItemGroup>
         <None Update="appsettings.json">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
+        <None Include="wwwroot\Assets\Images\logo.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -24,9 +26,24 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="AspNetCore.HealthChecks.UI" Version="8.0.2" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.Client" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.UI.InMemory.Storage" Version="8.0.1" />
+        <PackageReference Include="AspNetCore.HealthChecks.Uris" Version="8.0.1" />
+        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks" Version="8.0.8" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1"/>
         <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="10.0.0"/>
         <PackageReference Include="Unidecode.NET" Version="2.1.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Assets/Images/logo.png">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="wwwroot\Assets\dotnet.css" />
     </ItemGroup>
 
     <Target Name="EnsureLogsFolder" AfterTargets="Build">

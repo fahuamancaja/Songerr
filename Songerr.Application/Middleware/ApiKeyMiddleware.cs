@@ -1,35 +1,47 @@
 ﻿using System.Net;
+using Microsoft.AspNetCore.Http;
+using System.Threading.Tasks;
 
-namespace Songerr.Application;
-
-public class ApiKeyMiddleware
+namespace Songerr.Application.Middleware
 {
-    private readonly IConfiguration _config;
-    private readonly RequestDelegate _next;
-
-    public ApiKeyMiddleware(RequestDelegate next, IConfiguration config)
+    public class ApiKeyMiddleware
     {
-        _next = next;
-        _config = config;
-    }
+        private readonly RequestDelegate _next;
+        private readonly IConfiguration _config;
 
-    public async Task InvokeAsync(HttpContext context)
-    {
-        if (string.IsNullOrWhiteSpace(context.Request.Headers["X-API-Key"]))
+        public ApiKeyMiddleware(RequestDelegate next, IConfiguration config)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return;
+            _next = next;
+            _config = config;
         }
 
-        string? userApiKey = context.Request.Headers["X-API-Key"];
-        var validApiKey = _config["ApiKeys:MyApiKey"];
-
-        if (userApiKey != validApiKey)
+        public async Task InvokeAsync(HttpContext context)
         {
-            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-            return;
-        }
+            var path = context.Request.Path.Value;
+            if (path != null && (
+                    path.StartsWith("/health", StringComparison.OrdinalIgnoreCase) ||
+                    path.StartsWith("/ui/resources/", StringComparison.OrdinalIgnoreCase)))
+            {
+                await _next(context);
+                return;
+            }
 
-        await _next(context);
+            if (string.IsNullOrWhiteSpace(context.Request.Headers["X-API-Key"]))
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return;
+            }
+
+            string? userApiKey = context.Request.Headers["X-API-Key"];
+            var validApiKey = _config["ApiKeys:MyApiKey"];
+
+            if (userApiKey != validApiKey)
+            {
+                context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                return;
+            }
+
+            await _next(context);
+        }
     }
 }

@@ -15,42 +15,36 @@ public class ParserService(IOptions<LocalSettings> settings) : IParserService
     public async Task MoveFileToCorrectLocation(SongModel songModel)
     {
         var fileExtension = Path.GetExtension(songModel.FilePath);
-        var titleName = $"{songModel.Author} - {songModel.Title}";
+        var titleName = songModel.Title!.Contains('-')
+            ? songModel.Title
+            : $"{songModel.Author} - {songModel.Title}";
         var rootDirectoryPath = _settings.DownloadPath;
+        string? destinationDirectory = rootDirectoryPath;
 
-        if (songModel is { Author: not null, Album: not null })
+        if (songModel.Author is not null && songModel.Album is not null)
         {
-            var albumArtistPath = Path.Combine(songModel.Author, songModel.Album);
-
-            var fullAlbumDirectory = Path.Combine(rootDirectoryPath!, albumArtistPath);
-
-            var newFileName = Path.ChangeExtension(titleName, fileExtension);
-            var newFilePath = Path.Combine(fullAlbumDirectory, newFileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
-
-            // Copy the file to the new location, overwriting if it already exists
-            await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
-
-            // Delete the original file
-            await Task.Run(() => File.Delete(songModel.FilePath!));
-
-            songModel.FilePath = newFilePath;
+            destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Author, songModel.Album);
         }
-        else
+        else if (songModel.Author is not null)
         {
-            var newFileName = Path.ChangeExtension(titleName, fileExtension);
-            var newFilePath = Path.Combine(rootDirectoryPath, newFileName);
-            Directory.CreateDirectory(Path.GetDirectoryName(newFilePath) ??
-                                      throw new InvalidOperationException("Directory path should not be null"));
-
-            // Copy the file to the new location, overwriting if it already exists
-            await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
-
-            // Delete the original file
-            await Task.Run(() => File.Delete(songModel.FilePath!));
-
-            songModel.FilePath = newFilePath;
+            destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Author);
         }
+        else if (songModel.Album is not null)
+        {
+            destinationDirectory = Path.Combine(rootDirectoryPath!, songModel.Album);
+        }
+
+        var newFileName = Path.ChangeExtension(titleName, fileExtension);
+        var newFilePath = Path.Combine(destinationDirectory!, newFileName);
+        Directory.CreateDirectory(Path.GetDirectoryName(newFilePath)!);
+
+        // Copy the file to the new location, overwriting if it already exists
+        await Task.Run(() => File.Copy(songModel.FilePath!, newFilePath, true));
+
+        // Delete the original file
+        await Task.Run(() => File.Delete(songModel.FilePath!));
+
+        songModel.FilePath = newFilePath;
     }
 
     public void ParseVideoUrl(SongModel? songmodel)

@@ -1,4 +1,6 @@
+using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using Songerr.Application.Middleware;
@@ -10,6 +12,7 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
         // Serilog Configuration
         Log.Logger = new LoggerConfiguration()
             .Enrich.FromLogContext()
@@ -27,7 +30,6 @@ public class Program
 
         // Register services by calling the RegisterServices method
         builder.Services.RegisterServices(builder.Configuration);
-        builder.Services.AddHealthChecks();
 
         var app = builder.Build();
 
@@ -43,12 +45,16 @@ public class Program
 
         app.UseRouting();
 
-        // Apply custom middleware only to non-health endpoints
-        app.UseWhen(context => !context.Request.Path.StartsWithSegments("/health"),
-            appBuilder => { appBuilder.UseMiddleware<ApiKeyMiddleware>(); });
-
-        // Map health check endpoints and ensure they return JSON
-        app.MapHealthChecks("/health");
+        app.UseMiddleware<ApiKeyMiddleware>();
+        app.MapHealthChecks("/health", new HealthCheckOptions()
+        {
+            Predicate = _ => true,
+            ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+        });
+        app.UseEndpoints(config => config.MapHealthChecksUI(setup =>
+        {
+            setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css");
+        }));
 
         // Global exception handler
         app.UseExceptionHandler(appError =>
@@ -57,7 +63,10 @@ public class Program
             {
                 var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
                 if (exceptionHandlerFeature?.Error != null)
-                    await context.Response.WriteAsJsonAsync(new { error = exceptionHandlerFeature.Error.Message });
+                    await context.Response.WriteAsJsonAsync(new
+                    {
+                        error = exceptionHandlerFeature.Error.Message
+                    });
             });
         });
 

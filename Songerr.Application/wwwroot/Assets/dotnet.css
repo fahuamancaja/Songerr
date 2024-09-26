@@ -1,0 +1,9 @@
+﻿:root {
+    --primaryColor: #5A189A; /* A rich, royal purple */
+    --secondaryColor: #FFD700; /* A golden yellow, less intense */
+    --accentColor: #FF6F61; /* A warm coral, which complements both */
+    --bgMenuActive: #4338CA; /* A deeper shade of the primary color */
+    --bgButton: #5A189A; /* Uses the secondary color for buttons */
+    --logoImageUrl: url('/Assets/Images/logo.png');
+    --bgAside: var(--primaryColor); /* Maintains consistency with the primary color */
+}
