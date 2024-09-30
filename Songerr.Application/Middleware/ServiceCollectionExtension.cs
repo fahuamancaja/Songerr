@@ -45,16 +45,10 @@ public static class ServiceCollectionExtension
         services.Configure<SpotifySettings>(configuration.GetSection("AppSettings:Spotify"));
         services.Configure<SongerrSettings>(configuration.GetSection("Songerr.Application"));
         services.Configure<LocalSettings>(configuration.GetSection("AppSettings:LocalSettings"));
-
+        
         // Add basic health check services
         services.AddHealthChecks()
-            .AddCheck("API Health Check", () =>
-            {
-                var isHealthy = true; // Simulate a health check
-                return isHealthy
-                    ? HealthCheckResult.Healthy("The check indicates a healthy state.")
-                    : HealthCheckResult.Unhealthy("The check indicates an unhealthy state.");
-            }, new[] { "AspNetCore" }, new TimeSpan(0, 1, 0));
+            .AddCheck("API Endpoint", () => HealthCheckResult.Healthy("The API is reachable."), tags: new[] { "api", "endpoint" });
 
         // Add HealthChecks UI
         var healthCheckUiSection = configuration.GetSection("HealthCheckUI:HealthChecks");
