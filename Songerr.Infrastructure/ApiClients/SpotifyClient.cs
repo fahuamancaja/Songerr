@@ -3,10 +3,9 @@ using Flurl.Http;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Serilog;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.Models;
-using Songerr.Infrastructure.OptionSettings;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
+using Songerr.Domain.Models.OptionSettings;
 
 namespace Songerr.Infrastructure.ApiClients;
 
@@ -17,6 +16,8 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
 
     public async Task<string?> GetSpotifyAccessTokenAsync()
     {
+        Log.Information("Attempting to get Spotify access token");
+
         var response = await "https://accounts.spotify.com/api/token"
             .WithHeader("Content-Type", "application/x-www-form-urlencoded")
             .PostUrlEncodedAsync(new
@@ -33,6 +34,8 @@ public class SpotifyClient(IOptions<SpotifySettings> settings) : ISpotifyClientS
 
     public async Task<SpotifyResults?> GetSpotifyMetaData(SongModel? songModel, string accessToken)
     {
+        Log.Information($"Attempting to get Spotify metadata for song: {songModel?.Title} by {songModel?.Author}");
+
         var request = new FlurlRequest("https://api.spotify.com/v1/search")
             .SetQueryParam("q", $"artist:{songModel?.Author} track:{songModel?.Title}")
             .SetQueryParam("type", "track")

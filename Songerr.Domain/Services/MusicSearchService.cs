@@ -1,7 +1,7 @@
 ﻿using System.Text.RegularExpressions;
 using Serilog;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
 
 namespace Songerr.Domain.Services;
 

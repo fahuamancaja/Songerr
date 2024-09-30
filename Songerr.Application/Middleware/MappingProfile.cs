@@ -3,7 +3,7 @@ using AutoMapper;
 using Unidecode.NET;
 using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
-using SongModel = Songerr.Infrastructure.PayloadModels.SongModel;
+using SongModel = Songerr.Domain.Models.SongModel;
 
 namespace Songerr.Application.Middleware;
 

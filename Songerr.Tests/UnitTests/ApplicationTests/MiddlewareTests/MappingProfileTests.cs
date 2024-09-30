@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Songerr.Application.Middleware;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Models;
 using YoutubeExplode.Channels;
 using YoutubeExplode.Common;
 using YoutubeExplode.Playlists;

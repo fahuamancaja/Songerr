@@ -1,5 +1,5 @@
 ﻿using AutoFixture;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Models;
 
 namespace Songerr.Tests.Customizations;
 

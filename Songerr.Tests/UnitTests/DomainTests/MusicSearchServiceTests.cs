@@ -1,10 +1,9 @@
 using AutoFixture;
 using AutoFixture.Xunit2;
 using Moq;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
 using Songerr.Domain.Services;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.Models;
-using Songerr.Infrastructure.PayloadModels;
 
 namespace Songerr.Tests.UnitTests.DomainTests;
 

@@ -1,7 +1,7 @@
 ﻿using Moq;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
 using Songerr.Domain.Services;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
 namespace Songerr.Tests.UnitTests.DomainTests;

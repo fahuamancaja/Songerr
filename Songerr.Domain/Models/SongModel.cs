@@ -1,4 +1,4 @@
-﻿namespace Songerr.Infrastructure.PayloadModels;
+﻿namespace Songerr.Domain.Models;
 
 public class SongModel
 {

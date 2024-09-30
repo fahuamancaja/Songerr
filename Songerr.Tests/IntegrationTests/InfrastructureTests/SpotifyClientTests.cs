@@ -2,10 +2,9 @@
 using Flurl.Http.Testing;
 using Microsoft.Extensions.Options;
 using Moq;
+using Songerr.Domain.Models;
+using Songerr.Domain.Models.OptionSettings;
 using Songerr.Infrastructure.ApiClients;
-using Songerr.Infrastructure.Models;
-using Songerr.Infrastructure.OptionSettings;
-using Songerr.Infrastructure.PayloadModels;
 
 namespace Songerr.Tests.IntegrationTests.InfrastructureTests;
 

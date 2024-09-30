@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 
-namespace Songerr.Infrastructure.Models;
+namespace Songerr.Domain.Models;
 
 [ExcludeFromCodeCoverage]
 public class Album

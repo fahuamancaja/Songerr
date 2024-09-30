@@ -36,7 +36,13 @@ public class Program
 
         app.UseRouting();
 
+        // Add TraceIdMiddleware to the pipeline
+        app.UseMiddleware<TraceIdMiddleware>();
+
+        // API Key Middleware
         app.UseMiddleware<ApiKeyMiddleware>();
+
+        // Middleware Healthchecks
         app.MapHealthChecks("/health", new HealthCheckOptions
         {
             Predicate = _ => true,
@@ -44,8 +50,6 @@ public class Program
         });
 
         app.MapHealthChecksUI(setup => { setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css"); });
-
-        app.UseAuthorization();
 
         // Global exception handler
         app.UseExceptionHandler(appError =>

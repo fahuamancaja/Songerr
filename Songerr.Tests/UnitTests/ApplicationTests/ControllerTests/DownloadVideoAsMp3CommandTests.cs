@@ -1,19 +1,19 @@
 ﻿using Moq;
 using Songerr.Application.Application.Command;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.ControllerTests;
 
-public class DownloadVideoAsMp3HandlerTests
+public class DownloadVideoAsAudioFileHandlerTests
 {
-    private readonly DownloadVideoAsMp3Handler _handler;
+    private readonly DownloadVideoAsAudioFileHandler _handler;
     private readonly Mock<ISongerrService> _songerrServiceMock;
 
-    public DownloadVideoAsMp3HandlerTests()
+    public DownloadVideoAsAudioFileHandlerTests()
     {
         _songerrServiceMock = new Mock<ISongerrService>();
-        _handler = new DownloadVideoAsMp3Handler(_songerrServiceMock.Object);
+        _handler = new DownloadVideoAsAudioFileHandler(_songerrServiceMock.Object);
     }
 
     [Fact]
@@ -27,7 +27,7 @@ public class DownloadVideoAsMp3HandlerTests
             .Setup(service => service.SongerrSongService(url))
             .ReturnsAsync(expectedSong);
 
-        var command = new DownloadVideoAsMp3Command { Url = url };
+        var command = new DownloadVideoAsAudioFileCommand { Url = url };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -40,7 +40,7 @@ public class DownloadVideoAsMp3HandlerTests
     public async Task Handle_ReturnsNull_WhenUrlIsNull()
     {
         // Arrange
-        var command = new DownloadVideoAsMp3Command { Url = null };
+        var command = new DownloadVideoAsAudioFileCommand { Url = null };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

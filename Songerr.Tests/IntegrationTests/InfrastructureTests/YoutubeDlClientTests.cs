@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
+using Songerr.Domain.Models;
+using Songerr.Domain.Models.OptionSettings;
 using Songerr.Infrastructure.ApiClients;
-using Songerr.Infrastructure.OptionSettings;
-using Songerr.Infrastructure.PayloadModels;
 using YoutubeDLSharp;
 using YoutubeExplode;
 

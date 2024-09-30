@@ -1,7 +1,7 @@
 ﻿using Moq;
 using Songerr.Application.Application.Command;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.CommandTests;
 

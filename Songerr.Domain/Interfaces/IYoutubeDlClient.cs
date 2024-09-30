@@ -1,8 +1,8 @@
-﻿using Songerr.Infrastructure.PayloadModels;
+﻿using Songerr.Domain.Models;
 using YoutubeExplode.Playlists;
 using YoutubeExplode.Videos;
 
-namespace Songerr.Infrastructure.Interfaces;
+namespace Songerr.Domain.Interfaces;
 
 public interface IYoutubeDlClient
 {

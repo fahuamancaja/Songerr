@@ -1,9 +1,9 @@
 ﻿using AutoFixture.Xunit2;
 using Microsoft.Extensions.Options;
 using Moq;
+using Songerr.Domain.Models;
+using Songerr.Domain.Models.OptionSettings;
 using Songerr.Domain.Services;
-using Songerr.Infrastructure.OptionSettings;
-using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
 namespace Songerr.Tests.UnitTests.DomainTests;

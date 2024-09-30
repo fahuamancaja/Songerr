@@ -1,7 +1,6 @@
-using Songerr.Infrastructure.Models;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Models;
 
-namespace Songerr.Infrastructure.Interfaces;
+namespace Songerr.Domain.Interfaces;
 
 public interface ISpotifyClientSearch
 {

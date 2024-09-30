@@ -4,7 +4,6 @@ using Moq;
 using Songerr.Application.Application.Command;
 using Songerr.Application.Controllers;
 using Songerr.Domain.Models;
-using Songerr.Infrastructure.PayloadModels;
 using Songerr.Tests.AutoDataAttributes;
 
 namespace Songerr.Tests.UnitTests.ApplicationTests.ControllerTests;
@@ -27,7 +26,7 @@ public class SongerrControllerTests
     {
         // Arrange
         _mediatorMock
-            .Setup(x => x.Send(It.IsAny<DownloadVideoAsMp3Command>(), It.IsAny<CancellationToken>()))
+            .Setup(x => x.Send(It.IsAny<DownloadVideoAsAudioFileCommand>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(songModel);
 
         // Act

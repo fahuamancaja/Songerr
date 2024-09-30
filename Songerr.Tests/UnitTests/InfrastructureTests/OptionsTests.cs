@@ -1,4 +1,4 @@
-﻿using Songerr.Infrastructure.OptionSettings;
+﻿using Songerr.Domain.Models.OptionSettings;
 
 namespace Songerr.Tests.UnitTests.InfrastructureTests;
 

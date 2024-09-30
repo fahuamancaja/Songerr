@@ -1,4 +1,4 @@
-namespace Songerr.Infrastructure.OptionSettings;
+namespace Songerr.Domain.Models.OptionSettings;
 
 public class YoutubeSettings
 {

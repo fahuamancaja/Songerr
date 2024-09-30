@@ -1,9 +1,9 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Songerr.Domain.Factories;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models.OptionSettings;
 using Songerr.Domain.Services;
 using Songerr.Infrastructure.ApiClients;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.OptionSettings;
 using YoutubeDLSharp;
 using YoutubeExplode;
 using IConfiguration = Microsoft.Extensions.Configuration.IConfiguration;
@@ -15,16 +15,11 @@ public static class ServiceCollectionExtension
     public static IServiceCollection RegisterServices(this IServiceCollection services, IConfiguration configuration)
     {
         // Existing service registrations
-
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddAutoMapper(typeof(Program));
         services.AddMediatR(cfg => { cfg.RegisterServicesFromAssemblyContaining<Program>(); });
-
-        // Register authorization services
-        services.AddAuthorization();
-        services.AddAuthentication( /* scheme configurations if needed */);
 
         // Register other services
         services.AddScoped<IPlaylistService, PlaylistService>();

@@ -4,8 +4,8 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Songerr.Application.Middleware;
 using Songerr.Domain.Factories;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.OptionSettings;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models.OptionSettings;
 using YoutubeDLSharp;
 using YoutubeExplode;
 

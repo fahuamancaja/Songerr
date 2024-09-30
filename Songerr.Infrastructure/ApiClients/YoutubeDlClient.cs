@@ -1,9 +1,9 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Options;
 using Serilog;
-using Songerr.Infrastructure.Interfaces;
-using Songerr.Infrastructure.OptionSettings;
-using Songerr.Infrastructure.PayloadModels;
+using Songerr.Domain.Interfaces;
+using Songerr.Domain.Models;
+using Songerr.Domain.Models.OptionSettings;
 using YoutubeDLSharp;
 using YoutubeDLSharp.Options;
 using YoutubeExplode;
