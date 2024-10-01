@@ -52,16 +52,16 @@ public class Program
         app.MapHealthChecksUI(setup => { setup.AddCustomStylesheet("wwwroot/Assets/dotnet.css"); });
 
         // Global exception handler
+        var globalExceptionHandler = new GlobalExceptionHandler();
         app.UseExceptionHandler(appError =>
         {
             appError.Run(async context =>
             {
                 var exceptionHandlerFeature = context.Features.Get<IExceptionHandlerFeature>();
                 if (exceptionHandlerFeature?.Error != null)
-                    await context.Response.WriteAsJsonAsync(new
-                    {
-                        error = exceptionHandlerFeature.Error.Message
-                    });
+                {
+                    await globalExceptionHandler.TryHandleAsync(context, exceptionHandlerFeature.Error, new CancellationToken());
+                }
             });
         });
 
