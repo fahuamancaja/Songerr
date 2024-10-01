@@ -52,14 +52,14 @@ public class SongerrControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal($"Completed:{songModels.Count}", okResult.Value);
+        Assert.Equal($"Completed: {songModels.Count}", okResult.Value);
     }
 
     [Theory]
     [InlineData(null)]
     [InlineData("")]
     public async Task DownloadPlaylistSongs_InvalidPlaylistId_ShouldReturnOkResult(
-        string playlistId)
+        string? playlistId)
     {
         // Arrange
         _mediatorMock
@@ -71,6 +71,6 @@ public class SongerrControllerTests
 
         // Assert
         var okResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equal("Completed:0", okResult.Value);
+        Assert.Equal("Completed: 0", okResult.Value);
     }
 }

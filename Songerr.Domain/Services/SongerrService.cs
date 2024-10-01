@@ -29,13 +29,9 @@ public class SongerrService(
         new AddMetadataToFileCommand(parserService)
     ];
 
-    public async Task<SongModel?> SongerrSongService(string videoId)
+    private async Task ExecuteCommandsAsync(IEnumerable<ISongProcessingCommand> commands, SongModel songModel)
     {
-        var songModel = new SongModel { Id = videoId };
-
-        Log.Information($"Starting to process video ID: {videoId}");
-
-        foreach (var command in _commands)
+        foreach (var command in commands)
         {
             await command.ExecuteAsync(songModel).ConfigureAwait(false);
 
@@ -44,6 +40,15 @@ public class SongerrService(
 
             Log.Information($"Executed command: {command.GetType().Name}");
         }
+    }
+
+    public async Task<SongModel?> SongerrSongService(string videoId)
+    {
+        var songModel = new SongModel { Id = videoId };
+
+        Log.Information($"Starting to process video ID: {videoId}");
+
+        await ExecuteCommandsAsync(_commands, songModel).ConfigureAwait(false);
 
         Log.Information($"Successfully processed video ID: {videoId}");
         return songModel;
@@ -53,15 +58,7 @@ public class SongerrService(
     {
         Log.Information($"Starting to process video ID: {songModel.Id}");
 
-        foreach (var command in _playlistCommands)
-        {
-            await command.ExecuteAsync(songModel).ConfigureAwait(false);
-
-            if (command is ParseVideoUrlCommand && songModel.Id == null)
-                throw new ArgumentNullException(nameof(songModel.Id), "Song ID cannot be null.");
-
-            Log.Information($"Executed command: {command.GetType().Name}");
-        }
+        await ExecuteCommandsAsync(_playlistCommands, songModel).ConfigureAwait(false);
 
         Log.Information($"Successfully processed video ID: {songModel.Id}");
         return songModel;

@@ -1,6 +1,6 @@
 ﻿using Songerr.Domain.Models.OptionSettings;
 
-namespace Songerr.Tests.UnitTests.InfrastructureTests;
+namespace Songerr.Tests.UnitTests.DomainTests;
 
 public class YoutubeSettingsTests
 {

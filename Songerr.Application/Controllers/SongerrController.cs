@@ -33,7 +33,10 @@ public class SongerrController(IMediator mediator) : ControllerBase
     {
         Log.Information($"Received request to convert Playlist Id: {playlistId}");
 
-        return Ok($"Completed:{(await mediator.Send(new DownloadPlaylistSongsCommand { PlaylistId = playlistId })
-            .ConfigureAwait(false)).Count}");
+        var result = await mediator.Send(new DownloadPlaylistSongsCommand { PlaylistId = playlistId }).ConfigureAwait(false);
+    
+        Log.Information($"Completed processing Playlist Id: {playlistId}, Number of songs downloaded: {result.Count}");
+
+        return Ok($"Completed: {result.Count}");
     }
 }

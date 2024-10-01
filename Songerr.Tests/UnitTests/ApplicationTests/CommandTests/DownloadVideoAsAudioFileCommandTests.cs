@@ -2,8 +2,10 @@
 using Songerr.Application.Application.Command;
 using Songerr.Domain.Interfaces;
 using Songerr.Domain.Models;
+using Songerr.Tests.AutoDataAttributes;
+using TagLib.Riff;
 
-namespace Songerr.Tests.UnitTests.ApplicationTests.ControllerTests;
+namespace Songerr.Tests.UnitTests.ApplicationTests.CommandTests;
 
 public class DownloadVideoAsAudioFileHandlerTests
 {
@@ -16,13 +18,11 @@ public class DownloadVideoAsAudioFileHandlerTests
         _handler = new DownloadVideoAsAudioFileHandler(_songerrServiceMock.Object);
     }
 
-    [Fact]
-    public async Task Handle_ReturnsSongModel_WhenUrlIsValid()
+    [Theory]
+    [CustomAutoData]
+    public async Task Handle_ReturnsSongModel_WhenUrlIsValid(string url, SongModel expectedSong)
     {
         // Arrange
-        var url = "valid_url";
-        var expectedSong = new SongModel { Id = "song1", Title = "Song 1" };
-
         _songerrServiceMock
             .Setup(service => service.SongerrSongService(url))
             .ReturnsAsync(expectedSong);
@@ -36,11 +36,12 @@ public class DownloadVideoAsAudioFileHandlerTests
         Assert.Equal(expectedSong, result);
     }
 
-    [Fact]
-    public async Task Handle_ReturnsNull_WhenUrlIsNull()
+    [Theory]
+    [InlineData(null)]
+    public async Task Handle_ReturnsNull_WhenUrlIsNull(string? url)
     {
         // Arrange
-        var command = new DownloadVideoAsAudioFileCommand { Url = null };
+        var command = new DownloadVideoAsAudioFileCommand { Url = url };
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);

@@ -24,8 +24,4 @@
         <ProjectReference Include="..\Songerr.Domain\Songerr.Domain.csproj"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Folder Include="PayloadModels\"/>
-    </ItemGroup>
-
 </Project>
